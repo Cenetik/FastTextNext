@@ -20,14 +20,14 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    <StackPanel Grid.Row="0" Orientation="Horizontal">    
-      <TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!" Padding="5" Margin="5"/>          
+    <StackPanel Grid.Row="0" Orientation="Horizontal">          
       <Button Content="{materialIcons:MaterialIconTextExt Kind=PlusBold, Text=Новый текст}" Command="{Binding SetTextCommand}"/>
-      <Button Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Список текстов}" Command="{Binding ShowListTextCommand}"/>
+      <Button Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Список текстов}" Command="{Binding ShowListTextCommand}"/>    
+      <Button Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Поверх всех окон}" Command="{Binding SetTopMost}"/>
+    <TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!" Padding="5" Margin="5"/>          
     </StackPanel>
     <StackPanel Grid.Row="1" Orientation="Horizontal">      
-      <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Star}" ToolTip.Tip="Избранный" Command="{Binding SetFavoriteTextCommand}">
-        
+      <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Star}" ToolTip.Tip="Избранный" Command="{Binding SetFavoriteTextCommand}">        
       </ToggleButton>
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline}" ToolTip.Tip="Задача" Command="{Binding SetTaskTextCommand}"/>
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarCheck}" ToolTip.Tip="Задача" Command="{Binding SetDoneTaskTextCommand}"/>

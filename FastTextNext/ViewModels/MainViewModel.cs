@@ -9,6 +9,7 @@ public partial class MainViewModel : ObservableObject
     public RelayCommand ShowListTextCommand { get; }
 
     public event Action? OnOpenSettingsDialog;
+    public event Action? OnSetTopMost;
 
     public MainViewModel()
     {
@@ -29,7 +30,13 @@ public partial class MainViewModel : ObservableObject
     public void SetText()
     {
         TextContent = "Hello, world!";
-    }    
+    }
+
+    [RelayCommand]
+    public void SetTopMost()
+    {
+        OnSetTopMost?.Invoke();
+    }
 
     [RelayCommand]
     public void SetFavoriteText()

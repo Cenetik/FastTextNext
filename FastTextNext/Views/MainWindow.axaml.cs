@@ -11,6 +11,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         // Подписываемся на события ViewModel
         DataContextChanged += OnDataContextChanged;
+        
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -18,7 +19,13 @@ public partial class MainWindow : Window
         if (DataContext is MainViewModel viewModel)
         {
             viewModel.OnOpenSettingsDialog += OnOpenSettingsDialog;
+            viewModel.OnSetTopMost += ViewModel_OnSetTopMost;
         }
+    }
+
+    private void ViewModel_OnSetTopMost()
+    {
+        this.Topmost = !this.Topmost;
     }
 
     private async void OnOpenSettingsDialog()
