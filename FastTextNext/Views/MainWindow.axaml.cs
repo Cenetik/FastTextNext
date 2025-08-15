@@ -1,5 +1,7 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using FastTextNext.ViewModels;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace FastTextNext.Views;
@@ -12,6 +14,7 @@ public partial class MainWindow : Window
         // Подписываемся на события ViewModel
         DataContextChanged += OnDataContextChanged;
         
+
     }
 
     private void OnDataContextChanged(object? sender, EventArgs e)
@@ -33,7 +36,7 @@ public partial class MainWindow : Window
         var settingsWindow = new ListTextWindow
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
+        };       
 
         await settingsWindow.ShowDialog(this);
     }
