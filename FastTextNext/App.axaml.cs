@@ -1,4 +1,7 @@
-﻿using Application.Services;
+﻿using Application;
+using Application.Helpers;
+using Application.Services;
+using Application.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -7,6 +10,7 @@ using Avalonia.Markup.Xaml;
 using FastTextNext.Services;
 using FastTextNext.ViewModels;
 using FastTextNext.Views;
+using Infrastracture.Helpers;
 using Infrastracture.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +69,8 @@ public partial class App : Avalonia.Application
             };            
         }
 
+        var bl = Services.GetRequiredService<MainViewBusinessLogic>();
+
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -78,6 +84,7 @@ public partial class App : Avalonia.Application
         // Конфигурация
         services.AddSingleton(configuration);
 
+        services.AddSingleton<IMainViewModel,MainViewModel>();
         services.AddTransient<MainViewModel>();
         //var str = configuration.GetConnectionString("DefaultConnection");
         //// База данных
@@ -91,6 +98,8 @@ public partial class App : Avalonia.Application
 
         // Бизнес-сервисы
         services.AddSingleton<ITextStorageService, FileStorageService>();
+        services.AddSingleton<MainViewBusinessLogic>();
+        services.AddTransient<IBaseTimer, AvaloniaTimer>();
         //services.AddSingleton<IStopWordsService, StopWordsService>();
         //services.AddScoped<ITextProcessingService, TextProcessingService>();
         //services.AddScoped<IWordDictionaryService, WordDictionaryService>();
