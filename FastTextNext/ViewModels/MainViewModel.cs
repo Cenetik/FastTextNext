@@ -1,4 +1,5 @@
-﻿using Avalonia.Threading;
+﻿using Application.Services;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FastTextNext.Services;
@@ -16,18 +17,18 @@ public partial class MainViewModel : ObservableObject
     private bool _wasChanged = false;
     DispatcherTimer timer = null;
     private bool _withoutActivity = true;
+    private readonly ITextStorageService textStorageService;
 
-    public MainViewModel(ITestService testService,IConfiguration configuration)
+    public MainViewModel(ITextStorageService textStorageService,IConfiguration configuration)
     {
         ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);
-        this.testService = testService;
-        testService.TestFunc();
+        this.textStorageService = textStorageService;        
         var proc = configuration.GetSection("TextProcessing");
 
         DispatcherTimer timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromSeconds(3); // Set the interval to 1 second
-        timer.Tick += OnTimerTick; // Attach an event handler for the Tick event
-        timer.Start(); // Start the timer
+        timer.Interval = TimeSpan.FromSeconds(3); 
+        timer.Tick += OnTimerTick; 
+        timer.Start(); 
     }
 
     private void OnTimerTick(object? sender, EventArgs e)
@@ -41,6 +42,7 @@ public partial class MainViewModel : ObservableObject
     private void Saving()
     {
         var textContent = TextContent;
+        textStorageService.Save("myfile.txt", textContent);
     }
 
     private void ExecuteOpenSettings()
@@ -54,9 +56,7 @@ public partial class MainViewModel : ObservableObject
     {
         _wasChanged = true;
         _withoutActivity = false;
-    }
-
-    private readonly ITestService testService;
+    }    
 
     public string Greeting => "Welcome to Avalonia!";
 

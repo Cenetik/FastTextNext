@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastTextNext", "FastTextNex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastTextNext.Desktop", "FastTextNext.Desktop\FastTextNext.Desktop.csproj", "{0424BB68-31A7-415E-9A41-F02CB9725C88}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastracture", "Infrastracture\Infrastracture.csproj", "{868083E7-9985-4D3B-B426-25F0DADD5EFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{0424BB68-31A7-415E-9A41-F02CB9725C88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0424BB68-31A7-415E-9A41-F02CB9725C88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0424BB68-31A7-415E-9A41-F02CB9725C88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{868083E7-9985-4D3B-B426-25F0DADD5EFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{868083E7-9985-4D3B-B426-25F0DADD5EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{868083E7-9985-4D3B-B426-25F0DADD5EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{868083E7-9985-4D3B-B426-25F0DADD5EFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

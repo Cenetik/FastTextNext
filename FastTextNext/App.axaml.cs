@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using Application.Services;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -6,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using FastTextNext.Services;
 using FastTextNext.ViewModels;
 using FastTextNext.Views;
+using Infrastracture.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +15,7 @@ using System;
 
 namespace FastTextNext;
 
-public partial class App : Application
+public partial class App : Avalonia.Application
 {
     private IHost? _host;
 
@@ -88,7 +90,7 @@ public partial class App : Application
         //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Бизнес-сервисы
-        services.AddSingleton<ITestService, TestService>();
+        services.AddSingleton<ITextStorageService, FileStorageService>();
         //services.AddSingleton<IStopWordsService, StopWordsService>();
         //services.AddScoped<ITextProcessingService, TextProcessingService>();
         //services.AddScoped<IWordDictionaryService, WordDictionaryService>();

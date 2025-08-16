@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FastTextNext.Services
+namespace Application.Services
 {
     public interface ITextStorageService
     {
-        void SaveText(string textName, string text);
+        void Save(string textName, string textValue);
     }
 }
