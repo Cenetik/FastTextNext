@@ -1,10 +1,13 @@
 ﻿using Application;
 using Application.Helpers;
 using Application.Services;
+using Application.UseCases.SavingLogic;
 using Application.ViewModels;
+using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FastTextNext.Services;
+using FastTextNext.Views;
 using Microsoft.Extensions.Configuration;
 using System;
 
@@ -15,20 +18,33 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     public RelayCommand ShowListTextCommand { get; }
     private bool _wasChanged = false;
     private bool _withoutActivity = true;
+    private string _filename;
+    private bool _fromLoadFile = true;
+    private string _maintext = "";
+    private string _currentFolder = "";
+    private bool _checkButtonFavoriteClicked;
+    private bool _checkButtonTaskClicked;
+    private bool _checkButtonDoneTaskClicked;
+    private bool _noteModeChanged;
+    private bool _changeFontStyle;
+    private int _firstFileIndex;
+    private int _secondFileIndex;
+    private bool _isTopMost;
+    
 
     public event Action? OnOpenSettingsDialog;
     public event Action? OnSetTopMost;       
     
     public event Action TextContentChanged;
 
-    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer)
+    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, SavingLogicUseCase savingLogicUseCase)
         : base()
     {
         ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);
         
         this.textStorageService = textStorageService;
         this.timer = timer;
-
+        this.savingLogicUseCase = savingLogicUseCase;
         InitAndStartTimer();
     }
 
@@ -48,8 +64,45 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     private void Saving()
     {
-        var textContent = TextContent;
-        textStorageService.Save("myfile.txt", textContent);
+        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged);
+
+        var response = savingLogicUseCase.Save(saveRequest);
+
+        ChangeFilename(response.Filename);
+
+        //var textContent = TextContent;
+        //textStorageService.Save("myfile.txt", textContent);
+    }
+
+    private void ChangeFilename(string replace)
+    {
+        _filename = replace;
+        //_fontSystemService.SetStandartFont();
+
+        if (_filename != null && _filename.Contains("_f"))
+            _view.CheckButtonFavoriteChecked = true;
+        else
+        {
+            _view.CheckButtonFavoriteChecked = false;
+        }
+
+        if (_filename != null && _filename.Contains("_t"))
+            _view.CheckButtonTaskChecked = true;
+        else
+        {
+            _view.CheckButtonTaskChecked = false;
+        }
+
+        if (_filename != null && _filename.Contains("_d"))
+        {
+            _view.CheckButtonDoneTaskChecked = true;
+            //richEditControl1.Font = new Font(richEditControl1.Font, FontStyle.Strikeout);
+        }
+        else
+        {
+            _view.CheckButtonDoneTaskChecked = false;
+        }
+        ShowFileName();
     }
 
     private void ExecuteOpenSettings()
@@ -61,6 +114,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     [ObservableProperty] 
     private string _textContent = string.Empty;
     private readonly IBaseTimer timer;
+    private readonly SavingLogicUseCase savingLogicUseCase;
     private readonly ITextStorageService textStorageService;
 
     partial void OnTextContentChanged(string? value)

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastracture", "Infrastra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{9DA24E57-91A2-4BC7-97FE-B41F0D416AE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3F664FE-3C17-452D-8708-F9A9C9F41FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DA24E57-91A2-4BC7-97FE-B41F0D416AE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DA24E57-91A2-4BC7-97FE-B41F0D416AE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DA24E57-91A2-4BC7-97FE-B41F0D416AE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DA24E57-91A2-4BC7-97FE-B41F0D416AE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

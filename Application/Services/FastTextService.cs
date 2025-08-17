@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public interface ITextStorageService
+    public class FastTextService
     {
-        void EnsureMainDirectoryExists(object currentFolder);
-        void Save(string textName, string textValue);
+        public void Save(string filename, string content, bool wasChanged, bool )
     }
 }
