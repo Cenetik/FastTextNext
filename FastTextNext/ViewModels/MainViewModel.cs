@@ -87,10 +87,10 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         }
 
         if (_filename != null && _filename.Contains("_t"))
-            _view.CheckButtonTaskChecked = true;
+            IsTaskButtonChecked = true;            
         else
         {
-            _view.CheckButtonTaskChecked = false;
+            IsTaskButtonChecked = false;
         }
 
         if (_filename != null && _filename.Contains("_d"))
@@ -110,7 +110,9 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         OnOpenSettingsDialog?.Invoke();
     }
 
-    
+    [ObservableProperty]
+    private bool _isTaskButtonChecked;
+
     [ObservableProperty] 
     private string _textContent = string.Empty;
     private readonly IBaseTimer timer;

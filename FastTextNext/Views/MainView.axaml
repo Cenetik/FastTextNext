@@ -29,7 +29,8 @@
     <StackPanel Grid.Row="1" Orientation="Horizontal">      
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Star}" ToolTip.Tip="Избранный" Command="{Binding SetFavoriteTextCommand}">        
       </ToggleButton>
-      <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline}" ToolTip.Tip="Задача" Command="{Binding SetTaskTextCommand}" />
+      <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline}" ToolTip.Tip="Задача" Command="{Binding SetTaskTextCommand}"
+                    IsChecked="{Binding IsTaskButtonChecked}"/>
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarCheck}" ToolTip.Tip="Задача" Command="{Binding SetDoneTaskTextCommand}"/>
     </StackPanel>
     <TextBox Grid.Row="2" BorderThickness="1" BorderBrush="Black" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding TextContent}"/>    
