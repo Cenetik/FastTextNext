@@ -11,10 +11,12 @@ namespace Application.UseCases.SavingLogic
     public class SavingLogicUseCase
     {
         private readonly ITextStorageService textStorageService;
+        private readonly IActionsManager actionsManager;
 
-        public SavingLogicUseCase(ITextStorageService textStorageService)
+        public SavingLogicUseCase(ITextStorageService textStorageService, IActionsManager actionsManager)
         {
             this.textStorageService = textStorageService;
+            this.actionsManager = actionsManager;
         }
 
         public SavingLogicResult Save(SavingLogicRequest request)
@@ -74,12 +76,13 @@ namespace Application.UseCases.SavingLogic
                     textStorageService.Save(nameOfFile, request.TextContent);                    
                     logText = string.Format("[{0:HH:mm:ss}] Создана новая заметка {1}", DateTime.Now, nameOfFile);
                 }
-
-                ChangeFilename(nameOfFile);
+                
+                actionsManager.ChangeFilename(nameOfFile);
 
                 firstFileIndex = 0;
-                
-               // todo: реализовать согласно старому проекту
+
+                // todo: реализовать согласно старому проекту
+                actionsManager.LoadPrevTexts();
                 LoadPrevTexts();
                 buttonResaveThisChecked = false;
             }
@@ -154,16 +157,6 @@ namespace Application.UseCases.SavingLogic
             return null;
         }
 
-        // ну тут вообще много. Надо это как-то вызывать. Возможно в параметре надо передавать Action'ы? Надо подумоть... Или Subcase сделать
-        private void LoadPrevTexts()
-        {
-            var files = GetFiles(_view.SelectedTextGroup);
-            SetVisibleTaskButtons(files);
-            int visibleButtons = GetNumberVisibleTaskButtons();
-            _secondFileIndex = _firstFileIndex + visibleButtons;
-
-            SetHotkeyTexts(files, _firstFileIndex, _secondFileIndex, visibleButtons);
-            SetButtonsLabels(files);
-        }
+        
     }
 }

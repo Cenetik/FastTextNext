@@ -1,6 +1,7 @@
 ﻿using Application;
 using Application.Helpers;
 using Application.Services;
+using Application.UseCases;
 using Application.UseCases.SavingLogic;
 using Application.ViewModels;
 using Avalonia.Input;
@@ -37,7 +38,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     
     public event Action TextContentChanged;
 
-    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, SavingLogicUseCase savingLogicUseCase)
+    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, SavingLogicUseCase savingLogicUseCase, IActionsManager actionsManager)
         : base()
     {
         ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);
@@ -46,6 +47,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         this.timer = timer;
         this.savingLogicUseCase = savingLogicUseCase;
         InitAndStartTimer();
+        actionsManager.ChangeFilename += (string filename) => ChangeFilename(filename);
     }
 
     private void InitAndStartTimer()
@@ -72,6 +74,18 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
         //var textContent = TextContent;
         //textStorageService.Save("myfile.txt", textContent);
+    }
+
+    // ну тут вообще много. Надо это как-то вызывать. Возможно в параметре надо передавать Action'ы? Надо подумоть... Или Subcase сделать
+    private void LoadPrevTexts()
+    {
+        var files = GetFiles(_view.SelectedTextGroup);
+        SetVisibleTaskButtons(files);
+        int visibleButtons = GetNumberVisibleTaskButtons();
+        _secondFileIndex = _firstFileIndex + visibleButtons;
+
+        SetHotkeyTexts(files, _firstFileIndex, _secondFileIndex, visibleButtons);
+        SetButtonsLabels(files);
     }
 
     private void ChangeFilename(string replace)
