@@ -10,12 +10,14 @@ using Avalonia.Markup.Xaml;
 using FastTextNext.Services;
 using FastTextNext.ViewModels;
 using FastTextNext.Views;
+using Infrastracture;
 using Infrastracture.Helpers;
 using Infrastracture.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.IO;
 
 namespace FastTextNext;
 
@@ -68,6 +70,8 @@ public partial class App : Avalonia.Application
                 DataContext = vm
             };            
         }
+
+        GlobalData.SaveTextStorageFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FastTextNext");
 
         var bl = Services.GetRequiredService<MainViewBusinessLogic>();
 

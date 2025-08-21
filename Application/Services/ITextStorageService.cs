@@ -8,7 +8,9 @@ namespace Application.Services
 {
     public interface ITextStorageService
     {
-        void EnsureMainDirectoryExists(object currentFolder);
+        string GetText(string textName);
+        string GetPrevTextName();
         void Save(string textName, string textValue);
+        void ChangeTextName(string oldNameOfFile, string nameOfFile);
     }
 }

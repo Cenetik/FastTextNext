@@ -1,6 +1,7 @@
 ﻿using Application.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,88 +28,142 @@ namespace Application.UseCases.SavingLogic
             var firstFileIndex = request.FirstFileIndex;
             var buttonResaveThisChecked = request.ButtonResaveThisChecked;
             var nameOfFile = request.Filename;
+            var wasChanged = request.WasChanged;
+            var noteModeChanged = request.NoteModeChanged;
+
             if (!string.IsNullOrWhiteSpace(request.TextContent) && (request.WasChanged || request.NoteModeChanged))
-            {
-                
-                textStorageService.EnsureMainDirectoryExists(request.CurrentFolder);
-                var prevFile = string.IsNullOrEmpty(request.Filename) ? GetLastFilePath(request.CurrentFolder) : Path.Combine(request.CurrentFolder, request.Filename);
+            {                
+                var prevFile = string.IsNullOrEmpty(request.Filename) ? textStorageService.GetPrevTextName() 
+                                                                      : Path.Combine(request.CurrentFolder, request.Filename);
 
                 nameOfFile = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var oldNameOfFile = "";
                 if (!string.IsNullOrEmpty(prevFile))
                 {
-                    var text = GetFileText(prevFile);
+                    var text = textStorageService.GetText(prevFile);
                     // Проверяем, не содержит ли новый текст в начале текст предыдущего файла. Тогда мы будем перезаписывать файл, а не создавать новый, ибо это излишество
                     if (request.TextContent.Trim().StartsWith(text.Trim()) || request.ButtonResaveThisChecked)
                     {
-                        FileInfo fileInfo = new FileInfo(prevFile);
-                        oldNameOfFile = fileInfo.Name;
+                        // тут какая-то фигня была, типа извлечение имени из полного пути. Но по идее я это делаю в методе textStorageService.GetPrevTextName()
+                        //FileInfo fileInfo = new FileInfo(prevFile);
+                        oldNameOfFile = prevFile;// fileInfo.Name;
                     }
                 }
-
-                // Не баг, а фича - закомментировал специально: пусть лучше создаётся больше случайных задач и избранных, 
-                // чем потеряются какие-то задачи или избранные
-                // Добавлено позже: коммент выше непонятен, но, видимо, раньше задачи, избранные и выполненные не дублировались при изменении. 
-                // Т.е. если мы теперь вставим какой-то текст в середину текста уже существующей задачи, то будет создана новая задача, а не перезаписана старая.
-                // Но вообще, тогда закомментированное можно убрать...
-                //if (!string.IsNullOrEmpty(oldNameOfFile))
-                //{
+                
                 if (request.CheckButtonFavoriteChecked)
                     nameOfFile += "_f";
                 if (request.CheckButtonTaskChecked)
                     nameOfFile += "_t";
                 if (request.CheckButtonDoneTaskChecked)
                     nameOfFile += "_d";
-                //}
-
-                nameOfFile += ".txt";
+                
+                // Вот тут наверное не стоит добавлять расширение. Это задача всё-таки fileTextService реализации ITextStorageService
+                //nameOfFile += ".txt";
 
                 // Если был ранее создан файл с таким текстом в начале, и мы его дополняем
                 if (!string.IsNullOrEmpty(oldNameOfFile))
                 {
-                    // Записываем текст в этот старый файл
-                    File.WriteAllText(Path.Combine(request.CurrentFolder, oldNameOfFile), request.TextContent);
+                    textStorageService.Save(oldNameOfFile, request.TextContent);
                     // Переименовываем его по-новому
-                    File.Move(Path.Combine(request.CurrentFolder, oldNameOfFile), Path.Combine(request.CurrentFolder, nameOfFile));
+                    textStorageService.ChangeTextName(oldNameOfFile,nameOfFile);
+                    // вот эти логи бы сделать событиями какими-то. Раз уж надо нам такое логгировать.
                     logText = string.Format("[{0:HH:mm:ss}] Заметка дополнена и перезаписана под новым именем {1}", DateTime.Now, nameOfFile);
                 }
                 else
                 {
-                    File.WriteAllText(Path.Combine(request.CurrentFolder, nameOfFile), request.TextContent);
+                    textStorageService.Save(nameOfFile, request.TextContent);                    
                     logText = string.Format("[{0:HH:mm:ss}] Создана новая заметка {1}", DateTime.Now, nameOfFile);
                 }
 
-                //ChangeFilename(nameOfFile);
+                ChangeFilename(nameOfFile);
 
                 firstFileIndex = 0;
                 
                // todo: реализовать согласно старому проекту
-               // LoadPrevTexts();
+                LoadPrevTexts();
                 buttonResaveThisChecked = false;
             }
+
+            wasChanged = false;
+            noteModeChanged = false;
 
             return new SavingLogicResult(false, false,logText,firstFileIndex, buttonResaveThisChecked,nameOfFile);
         }
 
-        private string GetFileText(string path)
+        // Вот этот метод нужно вынести куда-то отдельно, т.к. он вызывается на разные действия пользователя, а не только при сохранении
+        private void ChangeFilename(string replace)
         {
-            var text = File.ReadAllText(path);
-            return text;
+            _filename = replace;
+            _fontSystemService.SetStandartFont();
+
+            if (_filename != null && _filename.Contains("_f"))
+                _view.CheckButtonFavoriteChecked = true;
+            else
+            {
+                _view.CheckButtonFavoriteChecked = false;
+            }
+
+            if (_filename != null && _filename.Contains("_t"))
+                _view.CheckButtonTaskChecked = true;
+            else
+            {
+                _view.CheckButtonTaskChecked = false;
+            }
+
+            if (_filename != null && _filename.Contains("_d"))
+            {
+                _view.CheckButtonDoneTaskChecked = true;
+                //richEditControl1.Font = new Font(richEditControl1.Font, FontStyle.Strikeout);
+            }
+            else
+            {
+                _view.CheckButtonDoneTaskChecked = false;
+            }
+            ShowFileName();
         }
 
-        private string GetLastFilePath(string currentFolder)
+        // Этот метод тоже нужно вынести отдельно
+        private void ShowFileName()
         {
-            if (!Directory.Exists(currentFolder))
-                Directory.CreateDirectory(currentFolder);
+            var mode = "";
+            if (_filename == null)
+                _filename = "";
 
-            var files = Directory.GetFiles(currentFolder);
-            if (files.Length == 0)
-                return "";
+            if (_filename.Contains("_t"))
+                mode += " - Задача ";
+            if (_filename.Contains("_d"))
+                mode += " - Задача выполнена";
+            if (_filename.Contains("_f"))
+                mode += " - Избранная";
 
-            var path = "";
-            path = files[files.Length - 1];
+            var dateTimeOfFile = GetDateTimeByFileName(_filename);
+            var filename = _filename;
+            if (dateTimeOfFile != null)
+                filename += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
 
-            return path;
-        }       
+            _view.HeadText = string.Format("{0} - {1}{2}", _maintext, filename, mode);
+        }
+
+        // и этот...
+        private DateTime? GetDateTimeByFileName(string filename)
+        {
+            var onlyDate = filename.Split(new[] { '_', '.' });
+            DateTime dt;
+            if (DateTime.TryParseExact(onlyDate[0], "yyyyMMddHHmmssfff", null, DateTimeStyles.None, out dt))
+                return dt;
+            return null;
+        }
+
+        // ну тут вообще много. Надо это как-то вызывать. Возможно в параметре надо передавать Action'ы? Надо подумоть... Или Subcase сделать
+        private void LoadPrevTexts()
+        {
+            var files = GetFiles(_view.SelectedTextGroup);
+            SetVisibleTaskButtons(files);
+            int visibleButtons = GetNumberVisibleTaskButtons();
+            _secondFileIndex = _firstFileIndex + visibleButtons;
+
+            SetHotkeyTexts(files, _firstFileIndex, _secondFileIndex, visibleButtons);
+            SetButtonsLabels(files);
+        }
     }
 }
