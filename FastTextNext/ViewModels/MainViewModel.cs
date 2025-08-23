@@ -10,12 +10,29 @@ using CommunityToolkit.Mvvm.Input;
 using FastTextNext.Services;
 using FastTextNext.Views;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
+using System.Globalization;
 
 namespace FastTextNext.ViewModels;
 
 public partial class MainViewModel : ObservableObject, IMainViewModel
 {
+    public string Greeting => "Welcome to Avalonia!";
+
+    [ObservableProperty]
+    private bool _isTaskButtonChecked;
+    [ObservableProperty]
+    private bool _isFavoriteButtonChecked;
+    [ObservableProperty]
+    private bool _isDoneTaskButtonChecked;
+    [ObservableProperty]
+    private bool _isResaveThisButtonChecked;
+    [ObservableProperty]
+    private string _textContent = string.Empty;
+    [ObservableProperty]
+    private string _logText = string.Empty;
+
     public RelayCommand ShowListTextCommand { get; }
     private bool _wasChanged = false;
     private bool _withoutActivity = true;
@@ -31,11 +48,12 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private int _firstFileIndex;
     private int _secondFileIndex;
     private bool _isTopMost;
-    
+    private readonly IBaseTimer timer;
+    private readonly SavingLogicUseCase savingLogicUseCase;
+    private readonly ITextStorageService textStorageService;
 
     public event Action? OnOpenSettingsDialog;
-    public event Action? OnSetTopMost;       
-    
+    public event Action? OnSetTopMost;           
     public event Action TextContentChanged;
 
     public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, SavingLogicUseCase savingLogicUseCase, IActionsManager actionsManager)
@@ -66,18 +84,26 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     private void Saving()
     {
-        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged);
+        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged, TextContent,_filename,IsResaveThisButtonChecked,IsFavoriteButtonChecked,IsTaskButtonChecked,IsTaskButtonChecked,LogText,_firstFileIndex);
 
         var response = savingLogicUseCase.Save(saveRequest);
+        LogText = response.LogText;
+        _firstFileIndex = response.FirstFileIndex;
+        _wasChanged = response.WasChanged;
+        _noteModeChanged = response.NoteModeChanged;
 
-        ChangeFilename(response.Filename);
+        if (response.TextNameChanged)
+        {
+            IsResaveThisButtonChecked = false;           
 
-        //var textContent = TextContent;
-        //textStorageService.Save("myfile.txt", textContent);
+            ChangeFilename(response.TextName);
+            // todo: много логики, реализовать потом (загрузка хоткеев для быстрого доступа к текстам, в основном для избранных и задач)
+            //LoadPrevTextsHotKeys();
+        }        
     }
-
-    // ну тут вообще много. Надо это как-то вызывать. Возможно в параметре надо передавать Action'ы? Надо подумоть... Или Subcase сделать
-    private void LoadPrevTexts()
+    
+    // Прогрузить кнопки быстрого доступа к текстам
+    /*private void LoadPrevTextsHotKeys()
     {
         var files = GetFiles(_view.SelectedTextGroup);
         SetVisibleTaskButtons(files);
@@ -86,7 +112,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
         SetHotkeyTexts(files, _firstFileIndex, _secondFileIndex, visibleButtons);
         SetButtonsLabels(files);
-    }
+    }*/
 
     private void ChangeFilename(string replace)
     {
@@ -94,10 +120,10 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         //_fontSystemService.SetStandartFont();
 
         if (_filename != null && _filename.Contains("_f"))
-            _view.CheckButtonFavoriteChecked = true;
+            IsFavoriteButtonChecked = true;
         else
         {
-            _view.CheckButtonFavoriteChecked = false;
+            IsFavoriteButtonChecked = false;
         }
 
         if (_filename != null && _filename.Contains("_t"))
@@ -109,14 +135,43 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
         if (_filename != null && _filename.Contains("_d"))
         {
-            _view.CheckButtonDoneTaskChecked = true;
-            //richEditControl1.Font = new Font(richEditControl1.Font, FontStyle.Strikeout);
+            IsDoneTaskButtonChecked = true;            
         }
         else
         {
-            _view.CheckButtonDoneTaskChecked = false;
+            IsDoneTaskButtonChecked = false;
         }
-        ShowFileName();
+        ShowTextName();
+    }
+
+    private void ShowTextName()
+    {
+        var mode = "";
+        if (_filename == null)
+            _filename = "";
+
+        if (_filename.Contains("_t"))
+            mode += " - Задача ";
+        if (_filename.Contains("_d"))
+            mode += " - Задача выполнена";
+        if (_filename.Contains("_f"))
+            mode += " - Избранная";
+
+        var dateTimeOfFile = GetDateTimeByTextName(_filename);
+        var filename = _filename;
+        if (dateTimeOfFile != null)
+            filename += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
+
+        _view.HeadText = string.Format("{0} - {1}{2}", _maintext, filename, mode);
+    }
+
+    private DateTime? GetDateTimeByTextName(string filename)
+    {
+        var onlyDate = filename.Split(new[] { '_', '.' });
+        DateTime dt;
+        if (DateTime.TryParseExact(onlyDate[0], "yyyyMMddHHmmssfff", null, DateTimeStyles.None, out dt))
+            return dt;
+        return null;
     }
 
     private void ExecuteOpenSettings()
@@ -124,14 +179,6 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         OnOpenSettingsDialog?.Invoke();
     }
 
-    [ObservableProperty]
-    private bool _isTaskButtonChecked;
-
-    [ObservableProperty] 
-    private string _textContent = string.Empty;
-    private readonly IBaseTimer timer;
-    private readonly SavingLogicUseCase savingLogicUseCase;
-    private readonly ITextStorageService textStorageService;
 
     partial void OnTextContentChanged(string? value)
     {
@@ -140,9 +187,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         _withoutActivity = false;
     }    
 
-    public string Greeting => "Welcome to Avalonia!";
-
-    
+        
 
     [RelayCommand]
     public void SetText()

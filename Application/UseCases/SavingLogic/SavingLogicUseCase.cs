@@ -10,20 +10,18 @@ namespace Application.UseCases.SavingLogic
 {
     public class SavingLogicUseCase
     {
-        private readonly ITextStorageService textStorageService;
-        private readonly IActionsManager actionsManager;
+        private readonly ITextStorageService textStorageService;        
 
-        public SavingLogicUseCase(ITextStorageService textStorageService, IActionsManager actionsManager)
+        public SavingLogicUseCase(ITextStorageService textStorageService)
         {
             this.textStorageService = textStorageService;
-            this.actionsManager = actionsManager;
         }
 
         public SavingLogicResult Save(SavingLogicRequest request)
         {
             if (request.ChangeFontStyle && request.NoteModeChanged)
             {
-                return new SavingLogicResult(false,false, request.LogText, request.FirstFileIndex,request.ButtonResaveThisChecked,request.Filename);
+                return new SavingLogicResult(false, request.LogText, request.FirstFileIndex,request.ButtonResaveThisChecked,request.Filename,false,request.NoteModeChanged);
             }
 
             var logText = request.LogText;
@@ -32,11 +30,12 @@ namespace Application.UseCases.SavingLogic
             var nameOfFile = request.Filename;
             var wasChanged = request.WasChanged;
             var noteModeChanged = request.NoteModeChanged;
+            var textNameChanged = false;
 
             if (!string.IsNullOrWhiteSpace(request.TextContent) && (request.WasChanged || request.NoteModeChanged))
             {                
                 var prevFile = string.IsNullOrEmpty(request.Filename) ? textStorageService.GetPrevTextName() 
-                                                                      : Path.Combine(request.CurrentFolder, request.Filename);
+                                                                      : request.Filename;
 
                 nameOfFile = DateTime.Now.ToString("yyyyMMddHHmmssfff");
                 var oldNameOfFile = "";
@@ -57,11 +56,8 @@ namespace Application.UseCases.SavingLogic
                 if (request.CheckButtonTaskChecked)
                     nameOfFile += "_t";
                 if (request.CheckButtonDoneTaskChecked)
-                    nameOfFile += "_d";
+                    nameOfFile += "_d";               
                 
-                // Вот тут наверное не стоит добавлять расширение. Это задача всё-таки fileTextService реализации ITextStorageService
-                //nameOfFile += ".txt";
-
                 // Если был ранее создан файл с таким текстом в начале, и мы его дополняем
                 if (!string.IsNullOrEmpty(oldNameOfFile))
                 {
@@ -76,87 +72,16 @@ namespace Application.UseCases.SavingLogic
                     textStorageService.Save(nameOfFile, request.TextContent);                    
                     logText = string.Format("[{0:HH:mm:ss}] Создана новая заметка {1}", DateTime.Now, nameOfFile);
                 }
-                
-                actionsManager.ChangeFilename(nameOfFile);
 
-                firstFileIndex = 0;
-
-                // todo: реализовать согласно старому проекту
-                actionsManager.LoadPrevTexts();
-                LoadPrevTexts();
+                textNameChanged = true;              
+                firstFileIndex = 0;                
                 buttonResaveThisChecked = false;
             }
 
             wasChanged = false;
             noteModeChanged = false;
 
-            return new SavingLogicResult(false, false,logText,firstFileIndex, buttonResaveThisChecked,nameOfFile);
-        }
-
-        // Вот этот метод нужно вынести куда-то отдельно, т.к. он вызывается на разные действия пользователя, а не только при сохранении
-        private void ChangeFilename(string replace)
-        {
-            _filename = replace;
-            _fontSystemService.SetStandartFont();
-
-            if (_filename != null && _filename.Contains("_f"))
-                _view.CheckButtonFavoriteChecked = true;
-            else
-            {
-                _view.CheckButtonFavoriteChecked = false;
-            }
-
-            if (_filename != null && _filename.Contains("_t"))
-                _view.CheckButtonTaskChecked = true;
-            else
-            {
-                _view.CheckButtonTaskChecked = false;
-            }
-
-            if (_filename != null && _filename.Contains("_d"))
-            {
-                _view.CheckButtonDoneTaskChecked = true;
-                //richEditControl1.Font = new Font(richEditControl1.Font, FontStyle.Strikeout);
-            }
-            else
-            {
-                _view.CheckButtonDoneTaskChecked = false;
-            }
-            ShowFileName();
-        }
-
-        // Этот метод тоже нужно вынести отдельно
-        private void ShowFileName()
-        {
-            var mode = "";
-            if (_filename == null)
-                _filename = "";
-
-            if (_filename.Contains("_t"))
-                mode += " - Задача ";
-            if (_filename.Contains("_d"))
-                mode += " - Задача выполнена";
-            if (_filename.Contains("_f"))
-                mode += " - Избранная";
-
-            var dateTimeOfFile = GetDateTimeByFileName(_filename);
-            var filename = _filename;
-            if (dateTimeOfFile != null)
-                filename += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
-
-            _view.HeadText = string.Format("{0} - {1}{2}", _maintext, filename, mode);
-        }
-
-        // и этот...
-        private DateTime? GetDateTimeByFileName(string filename)
-        {
-            var onlyDate = filename.Split(new[] { '_', '.' });
-            DateTime dt;
-            if (DateTime.TryParseExact(onlyDate[0], "yyyyMMddHHmmssfff", null, DateTimeStyles.None, out dt))
-                return dt;
-            return null;
-        }
-
-        
+            return new SavingLogicResult(wasChanged, logText,firstFileIndex, buttonResaveThisChecked,nameOfFile, textNameChanged, noteModeChanged);
+        }        
     }
 }
