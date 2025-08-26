@@ -1,6 +1,7 @@
 ﻿using Application;
 using Application.Helpers;
 using Application.Services;
+using Application.UseCases.SavingLogic;
 using Application.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
@@ -16,6 +17,7 @@ using Infrastracture.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 
@@ -52,6 +54,8 @@ public partial class App : Avalonia.Application
             })
             .Build();
 
+        GlobalData.SaveTextStorageFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FastTextNext");
+
         Services = _host.Services;
         var vm = Services.GetRequiredService<MainViewModel>();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -71,9 +75,7 @@ public partial class App : Avalonia.Application
             };            
         }
 
-        GlobalData.SaveTextStorageFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FastTextNext");
-
-        var bl = Services.GetRequiredService<MainViewBusinessLogic>();
+        
 
         base.OnFrameworkInitializationCompleted();
     }
@@ -90,6 +92,21 @@ public partial class App : Avalonia.Application
 
         services.AddSingleton<IMainViewModel,MainViewModel>();
         services.AddTransient<MainViewModel>();
+        services.AddTransient<ISavingLogicUseCase, SavingLogicUseCase>();
+
+        // Для декорирования можно также юзать dotnet add package Scrutor
+        // и потом 
+        // services.AddScoped<ITextStorageService, FileStorageService>();
+        // services.Decorate<ITextStorageService, FileStorageWithFolderCheckService>();
+        services.AddTransient<FileStorageService>();
+        services.AddTransient<ITextStorageService>(p =>
+        {
+            var fileStorageService = p.GetService<FileStorageService>();
+            return new FileStorageWithFolderCheckService(fileStorageService);
+        });        
+        services.AddTransient<IBaseTimer, AvaloniaTimer>();
+
+
         //var str = configuration.GetConnectionString("DefaultConnection");
         //// База данных
         //services.AddDbContext<AppDbContext>(options =>
@@ -101,9 +118,7 @@ public partial class App : Avalonia.Application
         //services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Бизнес-сервисы
-        services.AddSingleton<ITextStorageService, FileStorageService>();
-        services.AddSingleton<MainViewBusinessLogic>();
-        services.AddTransient<IBaseTimer, AvaloniaTimer>();
+
         //services.AddSingleton<IStopWordsService, StopWordsService>();
         //services.AddScoped<ITextProcessingService, TextProcessingService>();
         //services.AddScoped<IWordDictionaryService, WordDictionaryService>();

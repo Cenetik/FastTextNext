@@ -17,29 +17,36 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    <StackPanel Grid.Row="0" Orientation="Horizontal">          
+    <StackPanel Grid.Row="0" Orientation="Horizontal">            
       <Button Content="{materialIcons:MaterialIconTextExt Kind=PlusBold, Text=Новый текст}" Command="{Binding SetTextCommand}"/>
       <Button Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Список текстов}" Command="{Binding ShowListTextCommand}"/>    
       <Button Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Поверх всех окон}" Command="{Binding SetTopMost}"/>
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Disc, Text=Перезапись}" 
-                    ToolTip.Tip="F5, при сохранении будет перезаписана текущая заметка, а не создана новая. Флаг сбросится после сохранения заметки" Command="{Binding SetDoneTaskTextCommand}"
-                    IsDoneTaskChecked="{Binding IsResaveThisButtonChecked}"/>
-    <TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!" Padding="5" Margin="5"/>          
+                    ToolTip.Tip="F5, при сохранении будет перезаписана текущая заметка, а не создана новая. Флаг сбросится после сохранения заметки" Command="{Binding SetResaveModeCommand}"
+                    IsChecked="{Binding IsResaveThisButtonChecked}"/>
+      <TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!" Padding="5" Margin="5"/>          
     </StackPanel>
-    <StackPanel Grid.Row="1" Orientation="Horizontal">      
+    <StackPanel Grid.Row="1" Orientation="Horizontal">
+      <TextBox Classes="Headline6" Text="{Binding HeaderText}"/>
+    </StackPanel>
+    <StackPanel Grid.Row="2" Orientation="Horizontal">      
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Star}" ToolTip.Tip="Избранный" Command="{Binding SetFavoriteTextCommand}"
                     IsChecked="{Binding IsFavoriteButtonChecked}">        
       </ToggleButton>
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline}" ToolTip.Tip="Задача" Command="{Binding SetTaskTextCommand}"
                     IsChecked="{Binding IsTaskButtonChecked}"/>
       <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarCheck}" ToolTip.Tip="Задача выполонена" Command="{Binding SetDoneTaskTextCommand}"
-                    IsDoneTaskChecked="{Binding IsDoneTaskButtonChecked}"/>
+                    IsChecked="{Binding IsDoneTaskButtonChecked}"/>
+     
     </StackPanel>
-    <TextBox Grid.Row="2" BorderThickness="1" BorderBrush="Black" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding TextContent}"/>    
-    <StackPanel Grid.Row="3" Orientation="Vertical">
+    
+    <TextBox  Classes="outline" Theme="{StaticResource OutlineTextBox}" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding TextContent}"/>    
+    
+    <StackPanel Grid.Row="4" Orientation="Vertical">
       <TextBlock Text="{Binding LogText}"/>
     </StackPanel>
   </Grid>

@@ -12,6 +12,7 @@ using FastTextNext.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace FastTextNext.ViewModels;
@@ -20,20 +21,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 {
     public string Greeting => "Welcome to Avalonia!";
 
-    [ObservableProperty]
-    private bool _isTaskButtonChecked;
-    [ObservableProperty]
-    private bool _isFavoriteButtonChecked;
-    [ObservableProperty]
-    private bool _isDoneTaskButtonChecked;
-    [ObservableProperty]
-    private bool _isResaveThisButtonChecked;
-    [ObservableProperty]
-    private string _textContent = string.Empty;
-    [ObservableProperty]
-    private string _logText = string.Empty;
-
-    public RelayCommand ShowListTextCommand { get; }
+    #region private fields
     private bool _wasChanged = false;
     private bool _withoutActivity = true;
     private string _filename;
@@ -49,23 +37,120 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private int _secondFileIndex;
     private bool _isTopMost;
     private readonly IBaseTimer timer;
-    private readonly SavingLogicUseCase savingLogicUseCase;
+    private readonly ISavingLogicUseCase savingLogicUseCase;
     private readonly ITextStorageService textStorageService;
+    #endregion
 
+    #region ObservableProperties
+    [ObservableProperty]
+    private bool _isTaskButtonChecked;
+    [ObservableProperty]
+    private bool _isFavoriteButtonChecked;
+    [ObservableProperty]
+    private bool _isDoneTaskButtonChecked;
+    [ObservableProperty]
+    private bool _isResaveThisButtonChecked;
+    [ObservableProperty]
+    private string _textContent = string.Empty;
+    [ObservableProperty]
+    private string _logText = string.Empty;
+    [ObservableProperty]
+    private string _headerText = string.Empty;
+    #endregion
+
+    #region RelayCommands
+    public RelayCommand ShowListTextCommand { get; }
+
+    [RelayCommand]
+    public void SetText()
+    {
+        TextContent = "Hello, world!";
+    }
+
+    [RelayCommand]
+    public void SetTopMost()
+    {
+        OnSetTopMost?.Invoke();
+    }
+
+    [RelayCommand]
+    public void SetFavoriteText()
+    {
+
+    }
+
+    [RelayCommand]
+    public void SetTaskText()
+    {
+    }
+
+    [RelayCommand]
+    public void SetDoneTaskText()
+    {
+
+    }
+
+    [RelayCommand]
+    public void SetResaveMode()
+    {
+        if (IsResaveThisButtonChecked)
+            Saving();
+    }
+    #endregion
+
+    
+
+    #region Actions
     public event Action? OnOpenSettingsDialog;
     public event Action? OnSetTopMost;           
     public event Action TextContentChanged;
+    #endregion
 
-    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, SavingLogicUseCase savingLogicUseCase, IActionsManager actionsManager)
+    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISavingLogicUseCase savingLogicUseCase)
         : base()
-    {
-        ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);
-        
+    {   
         this.textStorageService = textStorageService;
         this.timer = timer;
         this.savingLogicUseCase = savingLogicUseCase;
-        InitAndStartTimer();
-        actionsManager.ChangeFilename += (string filename) => ChangeFilename(filename);
+
+        ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);        
+
+        InitAndStartTimer();        
+    }
+
+    private void ExecuteOpenSettings()
+    {
+        OnOpenSettingsDialog?.Invoke();
+    }
+
+    private void ChangeFilename(string replace)
+    {
+        _filename = replace;
+        //_fontSystemService.SetStandartFont();
+
+        if (_filename != null && _filename.Contains("_f"))
+            IsFavoriteButtonChecked = true;
+        else
+        {
+            IsFavoriteButtonChecked = false;
+        }
+
+        if (_filename != null && _filename.Contains("_t"))
+            IsTaskButtonChecked = true;
+        else
+        {
+            IsTaskButtonChecked = false;
+        }
+
+        if (_filename != null && _filename.Contains("_d"))
+        {
+            IsDoneTaskButtonChecked = true;
+        }
+        else
+        {
+            IsDoneTaskButtonChecked = false;
+        }
+        ShowTextName();
     }
 
     private void InitAndStartTimer()
@@ -80,18 +165,20 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
             Saving();
         else
             _withoutActivity = true;
+        Debug.WriteLine(DateTime.Now.ToString("HH:mm:ss"));
     }
 
     private void Saving()
     {
-        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged, TextContent,_filename,IsResaveThisButtonChecked,IsFavoriteButtonChecked,IsTaskButtonChecked,IsTaskButtonChecked,LogText,_firstFileIndex);
+        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged, TextContent,_filename,IsResaveThisButtonChecked,
+                                                 IsFavoriteButtonChecked,IsTaskButtonChecked,IsTaskButtonChecked,LogText,_firstFileIndex);
 
         var response = savingLogicUseCase.Save(saveRequest);
+
         LogText = response.LogText;
         _firstFileIndex = response.FirstFileIndex;
         _wasChanged = response.WasChanged;
         _noteModeChanged = response.NoteModeChanged;
-
         if (response.TextNameChanged)
         {
             IsResaveThisButtonChecked = false;           
@@ -114,35 +201,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         SetButtonsLabels(files);
     }*/
 
-    private void ChangeFilename(string replace)
-    {
-        _filename = replace;
-        //_fontSystemService.SetStandartFont();
-
-        if (_filename != null && _filename.Contains("_f"))
-            IsFavoriteButtonChecked = true;
-        else
-        {
-            IsFavoriteButtonChecked = false;
-        }
-
-        if (_filename != null && _filename.Contains("_t"))
-            IsTaskButtonChecked = true;            
-        else
-        {
-            IsTaskButtonChecked = false;
-        }
-
-        if (_filename != null && _filename.Contains("_d"))
-        {
-            IsDoneTaskButtonChecked = true;            
-        }
-        else
-        {
-            IsDoneTaskButtonChecked = false;
-        }
-        ShowTextName();
-    }
+    
 
     private void ShowTextName()
     {
@@ -162,7 +221,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         if (dateTimeOfFile != null)
             filename += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
 
-        _view.HeadText = string.Format("{0} - {1}{2}", _maintext, filename, mode);
+        HeaderText = string.Format("{0} - {1}{2}", _maintext, filename, mode);
     }
 
     private DateTime? GetDateTimeByTextName(string filename)
@@ -174,10 +233,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         return null;
     }
 
-    private void ExecuteOpenSettings()
-    {
-        OnOpenSettingsDialog?.Invoke();
-    }
+    
 
 
     partial void OnTextContentChanged(string? value)
@@ -189,32 +245,5 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
         
 
-    [RelayCommand]
-    public void SetText()
-    {
-        TextContent = "Hello, world!";
-    }
-
-    [RelayCommand]
-    public void SetTopMost()
-    {
-        OnSetTopMost?.Invoke();
-    }
-
-    [RelayCommand]
-    public void SetFavoriteText()
-    {
-
-    }
-
-    [RelayCommand]
-    public void SetTaskText() 
-    {
-    }
-
-    [RelayCommand]
-    public void SetDoneTaskText()
-    {
-
-    }
+    
 }
