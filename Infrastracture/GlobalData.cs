@@ -8,6 +8,6 @@ namespace Infrastracture
 {
     public static class GlobalData
     {
-        public static string SaveTextStorageFolder { get; set; } 
+        public static string SaveTextStorageFolder { get; set; } = "";
     }
 }

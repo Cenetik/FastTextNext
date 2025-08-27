@@ -43,9 +43,10 @@
                     IsChecked="{Binding IsDoneTaskButtonChecked}"/>
      
     </StackPanel>
-    
-    <TextBox  Classes="outline" Theme="{StaticResource OutlineTextBox}" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding TextContent}"/>    
-    
+
+    <!--TextBox Classes="outline" VerticalContentAlignment="Top" VerticalAlignment="Stretch" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" Text="{Binding TextContent}"/-->
+    <TextBox TextAlignment="Center" VerticalAlignment="Stretch" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" Text="{Binding TextContent}"/>
+
     <StackPanel Grid.Row="4" Orientation="Vertical">
       <TextBlock Text="{Binding LogText}"/>
     </StackPanel>

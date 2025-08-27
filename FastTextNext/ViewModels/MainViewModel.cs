@@ -106,6 +106,11 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     public event Action TextContentChanged;
     #endregion
 
+    public MainViewModel()
+    {
+
+    }
+
     public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISavingLogicUseCase savingLogicUseCase)
         : base()
     {   
