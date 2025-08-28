@@ -12,5 +12,6 @@ namespace Application.Services
         string GetPrevTextName();
         void Save(string textName, string textValue);
         void ChangeTextName(string oldNameOfFile, string nameOfFile);
+        List<string> GetAllTextsNames();
     }
 }

@@ -1,6 +1,8 @@
 ﻿using Application;
 using Application.Helpers;
 using Application.Services;
+using Application.UseCases.NextText;
+using Application.UseCases.PrevText;
 using Application.UseCases.SavingLogic;
 using Application.ViewModels;
 using Avalonia;
@@ -93,6 +95,9 @@ public partial class App : Avalonia.Application
         services.AddSingleton<IMainViewModel,MainViewModel>();
         services.AddTransient<MainViewModel>();
         services.AddTransient<ISavingLogicUseCase, SavingLogicUseCase>();
+        services.AddTransient<INextTextUseCase, NextTextUseCase>();
+        services.AddTransient<IPrevTextUseCase, PrevTextUseCase>();
+        services.AddTransient<ITextManageService, TextsManageService>();
 
         // Для декорирования можно также юзать dotnet add package Scrutor
         // и потом 

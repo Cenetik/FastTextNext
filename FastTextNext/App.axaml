@@ -7,7 +7,7 @@
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
    <Application.Styles>
-        <themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Indigo" SecondaryColor="LightGreen" />
+        <themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Indigo" SecondaryColor="Amber" />
         <materialIcons:MaterialIconStyles />
     </Application.Styles>
 </Application>

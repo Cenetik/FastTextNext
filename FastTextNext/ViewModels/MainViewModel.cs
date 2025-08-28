@@ -1,10 +1,14 @@
 ﻿using Application;
+using Application.Enums;
 using Application.Helpers;
 using Application.Services;
 using Application.UseCases;
+using Application.UseCases.NextText;
+using Application.UseCases.PrevText;
 using Application.UseCases.SavingLogic;
 using Application.ViewModels;
 using Avalonia.Input;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FastTextNext.Services;
@@ -14,6 +18,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FastTextNext.ViewModels;
 
@@ -24,7 +29,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     #region private fields
     private bool _wasChanged = false;
     private bool _withoutActivity = true;
-    private string _filename;
+    private string _textname;
     private bool _fromLoadFile = true;
     private string _maintext = "";
     private string _currentFolder = "";
@@ -38,6 +43,9 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private bool _isTopMost;
     private readonly IBaseTimer timer;
     private readonly ISavingLogicUseCase savingLogicUseCase;
+    private readonly INextTextUseCase nextTextUseCase;
+    private readonly ITextManageService textManageService;
+    private readonly IPrevTextUseCase prevTextUseCase;
     private readonly ITextStorageService textStorageService;
     #endregion
 
@@ -56,15 +64,27 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private string _logText = string.Empty;
     [ObservableProperty]
     private string _headerText = string.Empty;
+    [ObservableProperty]
+    private bool _isTaskButtonEnabled;
+    [ObservableProperty]
+    private bool _isDoneTaskButtonEnabled;
+    [ObservableProperty]
+    private bool _isFavoriteButtonEnabled;
     #endregion
 
     #region RelayCommands
     public RelayCommand ShowListTextCommand { get; }
 
     [RelayCommand]
-    public void SetText()
+    public void SetNewText()
     {
-        TextContent = "Hello, world!";
+        Saving();
+        ChangeFilename("");
+        TextContent = "";
+        _wasChanged = false;
+        IsDoneTaskButtonEnabled = IsTaskButtonEnabled = IsFavoriteButtonEnabled = false;
+        LogText = string.Format("[{0:HH:mm:ss}] Создание новой заметки", DateTime.Now);
+        ShowTextName();
     }
 
     [RelayCommand]
@@ -96,9 +116,50 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         if (IsResaveThisButtonChecked)
             Saving();
     }
+
+    [RelayCommand]
+    public void RemoveText()
+    {
+        //todo: реализовать
+        throw new NotImplementedException();
+    }
+
+    [RelayCommand]
+    public void NextText()
+    {
+        Saving();
+
+        var nextTextRequest = new NextTextRequest(_textname);
+        var response = nextTextUseCase.GetNextText(nextTextRequest);
+        if (response.NextTextExists)
+        {
+            _fromLoadFile = true;
+            TextContent = response.NextTextContent;
+            _textname = response.TextName;
+            ShowTextName();
+        }       
+    }
+
+    [RelayCommand]
+    public void PrevText()
+    {
+        Saving();
+        
+        var prevTextRequest = new PrevTextRequest(_textname);
+        var response = prevTextUseCase.GetPrevText(prevTextRequest);
+
+        if (response.PrevTextExists)
+        {
+            _fromLoadFile = true;
+            TextContent = response.PrevTextContent;
+            _textname = response.TextName;
+            ShowTextName();            
+        }
+
+    }
     #endregion
 
-    
+
 
     #region Actions
     public event Action? OnOpenSettingsDialog;
@@ -111,13 +172,16 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     }
 
-    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISavingLogicUseCase savingLogicUseCase)
+    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISavingLogicUseCase savingLogicUseCase, INextTextUseCase nextTextUseCase, 
+        ITextManageService textManageService,IPrevTextUseCase prevTextUseCase)
         : base()
     {   
         this.textStorageService = textStorageService;
         this.timer = timer;
         this.savingLogicUseCase = savingLogicUseCase;
-
+        this.nextTextUseCase = nextTextUseCase;
+        this.textManageService = textManageService;
+        this.prevTextUseCase = prevTextUseCase;
         ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);        
 
         InitAndStartTimer();        
@@ -130,24 +194,24 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     private void ChangeFilename(string replace)
     {
-        _filename = replace;
+        _textname = replace;
         //_fontSystemService.SetStandartFont();
 
-        if (_filename != null && _filename.Contains("_f"))
+        if (_textname != null && _textname.Contains("_f"))
             IsFavoriteButtonChecked = true;
         else
         {
             IsFavoriteButtonChecked = false;
         }
 
-        if (_filename != null && _filename.Contains("_t"))
+        if (_textname != null && _textname.Contains("_t"))
             IsTaskButtonChecked = true;
         else
         {
             IsTaskButtonChecked = false;
         }
 
-        if (_filename != null && _filename.Contains("_d"))
+        if (_textname != null && _textname.Contains("_d"))
         {
             IsDoneTaskButtonChecked = true;
         }
@@ -175,7 +239,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     private void Saving()
     {
-        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged, TextContent,_filename,IsResaveThisButtonChecked,
+        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged, TextContent,_textname,IsResaveThisButtonChecked,
                                                  IsFavoriteButtonChecked,IsTaskButtonChecked,IsTaskButtonChecked,LogText,_firstFileIndex);
 
         var response = savingLogicUseCase.Save(saveRequest);
@@ -183,7 +247,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         LogText = response.LogText;
         _firstFileIndex = response.FirstFileIndex;
         _wasChanged = response.WasChanged;
-        _noteModeChanged = response.NoteModeChanged;
+        _noteModeChanged = response.NoteModeChanged;        
         if (response.TextNameChanged)
         {
             IsResaveThisButtonChecked = false;           
@@ -209,24 +273,38 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     
 
     private void ShowTextName()
-    {
-        var mode = "";
-        if (_filename == null)
-            _filename = "";
+    {        
+        if (_textname == null)
+            _textname = "";        
 
-        if (_filename.Contains("_t"))
-            mode += " - Задача ";
-        if (_filename.Contains("_d"))
-            mode += " - Задача выполнена";
-        if (_filename.Contains("_f"))
-            mode += " - Избранная";
-
-        var dateTimeOfFile = GetDateTimeByTextName(_filename);
-        var filename = _filename;
+        var dateTimeOfFile = GetDateTimeByTextName(_textname);
+        var textNameForHeader = _textname;
         if (dateTimeOfFile != null)
-            filename += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
+            textNameForHeader += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
 
-        HeaderText = string.Format("{0} - {1}{2}", _maintext, filename, mode);
+        var mode = textManageService.GetTextCategory(_textname);
+
+
+        HeaderText = SetHeaderText(textNameForHeader, mode); 
+    }
+
+    private string SetHeaderText(string filename, TextCategory textCategory)
+    {
+        string mode="";
+        switch (textCategory)
+        {
+            case TextCategory.Favoites:
+                mode = "- Избранная";
+                break;
+            case TextCategory.DoneTasks:
+                mode = "- Задача выполнена";
+                break;
+            case TextCategory.Tasks:
+                mode = " - Задача";
+                break;
+        }
+
+        return string.Format("{0} - {1}{2}", _maintext, filename, mode);
     }
 
     private DateTime? GetDateTimeByTextName(string filename)
@@ -236,16 +314,23 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         if (DateTime.TryParseExact(onlyDate[0], "yyyyMMddHHmmssfff", null, DateTimeStyles.None, out dt))
             return dt;
         return null;
-    }
-
-    
+    }   
 
 
     partial void OnTextContentChanged(string? value)
     {
-        TextContentChanged?.Invoke();
-        _wasChanged = true;
-        _withoutActivity = false;
+        TextContentChanged?.Invoke();       
+
+        if (!_fromLoadFile)
+        {
+            _wasChanged = true;
+            _withoutActivity = false;
+        }
+        else
+            _fromLoadFile = false;
+
+        IsDoneTaskButtonEnabled = IsTaskButtonEnabled = IsFavoriteButtonEnabled = !string.IsNullOrEmpty(TextContent);
+        //checkButtonTask.Enabled = checkButtonDoneTask.Enabled = checkButtonFavorite.Enabled = !string.IsNullOrEmpty(richEditControl1.Text);
     }    
 
         
