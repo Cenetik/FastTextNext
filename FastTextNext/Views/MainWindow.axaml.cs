@@ -23,8 +23,11 @@ public partial class MainWindow : Window
         {
             viewModel.OnOpenSettingsDialog += OnOpenSettingsDialog;
             viewModel.OnSetTopMost += ViewModel_OnSetTopMost;
+            
         }
     }
+
+    
 
     private void ViewModel_OnSetTopMost()
     {

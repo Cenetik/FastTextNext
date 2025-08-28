@@ -71,6 +71,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     [ObservableProperty]
     private bool _isFavoriteButtonEnabled;
     #endregion
+        
 
     #region RelayCommands
     public RelayCommand ShowListTextCommand { get; }
@@ -85,6 +86,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         IsDoneTaskButtonEnabled = IsTaskButtonEnabled = IsFavoriteButtonEnabled = false;
         LogText = string.Format("[{0:HH:mm:ss}] Создание новой заметки", DateTime.Now);
         ShowTextName();
+        SetFocusOnMainText?.Invoke();
     }
 
     [RelayCommand]
@@ -137,7 +139,8 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
             TextContent = response.NextTextContent;
             _textname = response.TextName;
             ShowTextName();
-        }       
+        }
+        SetFocusOnMainText?.Invoke();
     }
 
     [RelayCommand]
@@ -155,7 +158,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
             _textname = response.TextName;
             ShowTextName();            
         }
-
+        SetFocusOnMainText?.Invoke();
     }
     #endregion
 
@@ -165,6 +168,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     public event Action? OnOpenSettingsDialog;
     public event Action? OnSetTopMost;           
     public event Action TextContentChanged;
+    public event Action? SetFocusOnMainText;
     #endregion
 
     public MainViewModel()
@@ -189,7 +193,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     private void ExecuteOpenSettings()
     {
-        OnOpenSettingsDialog?.Invoke();
+        OnOpenSettingsDialog?.Invoke();        
     }
 
     private void ChangeFilename(string replace)

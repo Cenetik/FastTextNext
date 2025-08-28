@@ -58,7 +58,7 @@
     </StackPanel>
 
     <!--TextBox Classes="outline" VerticalContentAlignment="Top" VerticalAlignment="Stretch" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" Text="{Binding TextContent}"/-->
-    <TextBox  Classes="filled" VerticalContentAlignment="Bottom" TextAlignment="Start" VerticalAlignment="Stretch" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" Text="{Binding TextContent}"/>
+    <TextBox Name="MainText" Classes="filled" VerticalContentAlignment="Bottom" TextAlignment="Start" VerticalAlignment="Stretch" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" Text="{Binding TextContent}"/>
 
     <StackPanel Grid.Row="4" Orientation="Vertical">
       <TextBlock Text="{Binding LogText}"/>
