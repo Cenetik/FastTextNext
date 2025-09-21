@@ -2,8 +2,24 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="FastTextNext.ListTextWindow"
+        x:DataType="vm:ListTextModel"
         Title="ListTextWindow">
-  Welcome to Avalonia!
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>      
+      <RowDefinition Height="*"/>      
+    </Grid.RowDefinitions>
+  </Grid>
+  <StackPanel Grid.Row="0" Orientation="Horizontal">
+    <Button Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=AccessPointMinus, Text=Перейти к заметке, Animation=Pulse}" Command="{Binding GotoTextCommand}" Margin="5"/>    
+  </StackPanel>
+  <StackPanel Grid.Row="1" Orientation="Horizontal">
+    <TextBlock Text="Поиск: "></TextBlock>
+    <TextBox Text="{Binging FindText}"/>
+    <Button Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=FindInPage, Text=Найти, Animation=Pulse}" Command="{Binding FindCommand}" Margin="5"/>
+  </StackPanel>
 </Window>
