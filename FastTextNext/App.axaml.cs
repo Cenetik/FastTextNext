@@ -65,7 +65,7 @@ public partial class App : Avalonia.Application
             desktop.MainWindow = new MainWindow
             {
                 DataContext = vm
-            };
+            };            
             
             desktop.Exit += Desktop_Exit;
         }

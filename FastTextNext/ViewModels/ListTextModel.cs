@@ -12,7 +12,7 @@ namespace FastTextNext.ViewModels
     {
         public ListTextModel() : base()
         {
-            GotoTextCommand = new RelayCommand(GotoText1);
+            GotoTextCommand = new RelayCommand(GotoText1);            
         }
 
         public RelayCommand GotoTextCommand { get; }
@@ -26,6 +26,7 @@ namespace FastTextNext.ViewModels
         [RelayCommand]
         public void FindText()
         {
+            var text = TextToFind;
             int a = 0;
             a = a + 1;
         }

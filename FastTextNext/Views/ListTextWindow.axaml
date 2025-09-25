@@ -9,6 +9,11 @@
         x:Class="FastTextNext.Views.ListTextWindow"
         x:DataType="vm:ListTextModel"
         Title="ListTextWindow">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:ListTextModel />
+  </Design.DataContext>
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -17,7 +22,7 @@
     </Grid.RowDefinitions>
   
     <StackPanel Grid.Row="0" Orientation="Horizontal">
-      <Button Classes="accent" Content="{materialIcons:MaterialIconTextExt Kind=Forward, Text=Перейти к заметке}" Margin="5" Command="{Binding ListTextModel.GotoTextCommand}"/>      
+      <Button Classes="accent" Content="{materialIcons:MaterialIconTextExt Kind=Forward, Text=Перейти к заметке}" Margin="5" Command="{Binding GotoTextCommand}"/>      
     </StackPanel>
     <StackPanel Grid.Row="1" Orientation="Horizontal">      
       <TextBox TextAlignment="Start" VerticalAlignment="Stretch" Text="{Binding TextToFind}" Watermark="Введите строку для поиска" MinWidth="300"/>

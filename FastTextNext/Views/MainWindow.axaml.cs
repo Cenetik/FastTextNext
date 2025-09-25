@@ -35,12 +35,13 @@ public partial class MainWindow : Window
     }
 
     private async void OnOpenSettingsDialog()
-    {
+    {        
         var settingsWindow = new ListTextWindow
         {
             IsEnabled = true,
             WindowStartupLocation = WindowStartupLocation.CenterOwner            
-        };       
+        };
+        settingsWindow.DataContext = new ListTextModel();
 
         await settingsWindow.ShowDialog(this);
     }
