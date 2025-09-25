@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace FastTextNext;
+namespace FastTextNext.Views;
 
 public partial class ListTextWindow : Window
 {

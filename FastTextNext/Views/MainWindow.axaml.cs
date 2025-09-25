@@ -38,7 +38,8 @@ public partial class MainWindow : Window
     {
         var settingsWindow = new ListTextWindow
         {
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
+            IsEnabled = true,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner            
         };       
 
         await settingsWindow.ShowDialog(this);

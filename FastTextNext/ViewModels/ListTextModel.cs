@@ -10,19 +10,27 @@ namespace FastTextNext.ViewModels
 {
     public partial class ListTextModel : ObservableObject
     {
-        [RelayCommand]
-        public void GotoText()
+        public ListTextModel() : base()
         {
-          
+            GotoTextCommand = new RelayCommand(GotoText1);
+        }
+
+        public RelayCommand GotoTextCommand { get; }
+        
+        public void GotoText1()
+        {
+            int a = 0;
+            a = a + 1;
         }
 
         [RelayCommand]
-        public void Find()
+        public void FindText()
         {
-
+            int a = 0;
+            a = a + 1;
         }
 
         [ObservableProperty]
-        private string _findText = string.Empty;
+        private string _textToFind = string.Empty;
     }
 }
