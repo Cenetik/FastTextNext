@@ -1,4 +1,6 @@
 ﻿using Application.Enums;
+using Application.Helpers;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +59,22 @@ namespace Application.Services
             if (textName.Contains("_f"))
                 category = TextCategory.Favoites;
             return category;
+        }
+
+        public List<TextEntity> GetTextEntities(TextCategory textGroup)
+        {
+            var textNames = GetTexts(textGroup);
+
+            var textEntities = new List<TextEntity>();
+            foreach (var textName in textNames)
+            {
+                var textEntity = new TextEntity();
+                textEntity.Name = textName;
+                textEntity.DateCreate = TextNameGenerator.GetDateTimeFromFileName(textName)??DateTime.Now;
+                textEntity.TextContent = textStorageService.GetText(textName);
+                textEntities.Add(textEntity);
+            }
+            return textEntities;
         }
 
         public List<string> GetTexts(TextCategory textGroup)

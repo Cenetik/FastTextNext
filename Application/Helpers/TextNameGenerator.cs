@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Services
+namespace Application.Helpers
 {
-
-    public class FileNameGenerateService : IFileNameGenerateService
+    public static class TextNameGenerator
     {
-        public string GenerateFileNameForShowing(string filename)
+        public static string GenerateFileNameForShowing(string filename)
         {
             var mode = "";
             if (filename == null)
@@ -23,14 +22,14 @@ namespace Application.Services
             if (filename.Contains("_f"))
                 mode += " - Избранная";
 
-            var dateTimeOfFile = GetDateTimeByFileName(filename);
+            var dateTimeOfFile = GetDateTimeFromFileName(filename);
             var outFilename = filename;
             if (dateTimeOfFile != null)
                 outFilename += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
             return outFilename;
         }
 
-        private DateTime? GetDateTimeByFileName(string filename)
+        public static DateTime? GetDateTimeFromFileName(string filename)
         {
             var onlyDate = filename.Split(new[] { '_', '.' });
             DateTime dt;

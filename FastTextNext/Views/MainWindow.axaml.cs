@@ -8,6 +8,7 @@ namespace FastTextNext.Views;
 
 public partial class MainWindow : Window
 {
+    private MainViewModel mainViewModel;
     public MainWindow()
     {
         InitializeComponent();
@@ -21,13 +22,11 @@ public partial class MainWindow : Window
     {
         if (DataContext is MainViewModel viewModel)
         {
+            mainViewModel = viewModel;
             viewModel.OnOpenSettingsDialog += OnOpenSettingsDialog;
-            viewModel.OnSetTopMost += ViewModel_OnSetTopMost;
-            
+            viewModel.OnSetTopMost += ViewModel_OnSetTopMost;            
         }
-    }
-
-    
+    }    
 
     private void ViewModel_OnSetTopMost()
     {
@@ -41,8 +40,12 @@ public partial class MainWindow : Window
             IsEnabled = true,
             WindowStartupLocation = WindowStartupLocation.CenterOwner            
         };
-        settingsWindow.DataContext = new ListTextModel();
+        var listTextModel = new ListTextModel(mainViewModel.TextManageService, mainViewModel.CurrentTextCategory);
+        settingsWindow.DataContext = listTextModel;
 
         await settingsWindow.ShowDialog(this);
+
+        if(listTextModel.ClosedByGoto)
+            mainViewModel.GotoText(listTextModel.SelectedText);
     }
 }

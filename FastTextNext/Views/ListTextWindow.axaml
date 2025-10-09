@@ -28,5 +28,34 @@
       <TextBox TextAlignment="Start" VerticalAlignment="Stretch" Text="{Binding TextToFind}" Watermark="Введите строку для поиска" MinWidth="300"/>
       <Button Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=FindInPage, Text=Найти}" Command="{Binding FindTextCommand}" Margin="5" />
     </StackPanel>
+    <ListBox Grid.Row="2"
+                   ItemsSource="{Binding LoadedTexts}"
+                   SelectedItem="{Binding SelectedText, Mode=TwoWay}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="{Binding TextContent}"
+                       VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="{Binding DateCreate}"                       
+                       VerticalAlignment="Center" Margin="5,0"/>
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+
+      <ListBox.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="Открыть переводчик"
+                    Command="{Binding WordDictionary.OpenTranslatorCommand}"/>
+          <Separator/>
+          <MenuItem Header="Удалить слово"
+                    Command="{Binding WordDictionary.DeleteWordCommand}"/>
+        </ContextMenu>
+      </ListBox.ContextMenu>
+    </ListBox>
   </Grid>
 </Window>

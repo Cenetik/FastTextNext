@@ -11,6 +11,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Domain.Entities;
 using FastTextNext.Services;
 using FastTextNext.Views;
 using Microsoft.Extensions.Configuration;
@@ -43,8 +44,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private bool _isTopMost;
     private readonly IBaseTimer timer;
     private readonly ISavingLogicUseCase savingLogicUseCase;
-    private readonly INextTextUseCase nextTextUseCase;
-    private readonly ITextManageService textManageService;
+    private readonly INextTextUseCase nextTextUseCase;    
     private readonly IPrevTextUseCase prevTextUseCase;
     private readonly ITextStorageService textStorageService;
     #endregion
@@ -70,11 +70,30 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private bool _isDoneTaskButtonEnabled;
     [ObservableProperty]
     private bool _isFavoriteButtonEnabled;
+    public TextCategory CurrentTextCategory { get; internal set; }
     #endregion
-        
+
+    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISavingLogicUseCase savingLogicUseCase, INextTextUseCase nextTextUseCase,
+        ITextManageService textManageService, IPrevTextUseCase prevTextUseCase)
+        : base()
+    {
+        this.textStorageService = textStorageService;
+        this.timer = timer;
+        this.savingLogicUseCase = savingLogicUseCase;
+        this.nextTextUseCase = nextTextUseCase;
+        this.TextManageService = textManageService;
+        this.prevTextUseCase = prevTextUseCase;
+        ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);
+
+        CurrentTextCategory = TextCategory.AllTexts;
+
+        InitAndStartTimer();
+    }
+
 
     #region RelayCommands
     public RelayCommand ShowListTextCommand { get; }
+    public ITextManageService TextManageService { get; internal set; }
 
     [RelayCommand]
     public void SetNewText()
@@ -160,6 +179,17 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         }
         SetFocusOnMainText?.Invoke();
     }
+
+    public void GotoText(TextEntity selectedText)
+    {
+        Saving();
+
+        _fromLoadFile = true;
+        TextContent = selectedText.TextContent;
+        _textname = selectedText.Name;
+        ShowTextName();
+        SetFocusOnMainText?.Invoke();
+    }
     #endregion
 
 
@@ -176,20 +206,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     }
 
-    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISavingLogicUseCase savingLogicUseCase, INextTextUseCase nextTextUseCase, 
-        ITextManageService textManageService,IPrevTextUseCase prevTextUseCase)
-        : base()
-    {   
-        this.textStorageService = textStorageService;
-        this.timer = timer;
-        this.savingLogicUseCase = savingLogicUseCase;
-        this.nextTextUseCase = nextTextUseCase;
-        this.textManageService = textManageService;
-        this.prevTextUseCase = prevTextUseCase;
-        ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);        
-
-        InitAndStartTimer();        
-    }
+    
 
     private void ExecuteOpenSettings()
     {
@@ -286,7 +303,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         if (dateTimeOfFile != null)
             textNameForHeader += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
 
-        var mode = textManageService.GetTextCategory(_textname);
+        var mode = TextManageService.GetTextCategory(_textname);
 
 
         HeaderText = SetHeaderText(textNameForHeader, mode); 
@@ -335,9 +352,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
         IsDoneTaskButtonEnabled = IsTaskButtonEnabled = IsFavoriteButtonEnabled = !string.IsNullOrEmpty(TextContent);
         //checkButtonTask.Enabled = checkButtonDoneTask.Enabled = checkButtonFavorite.Enabled = !string.IsNullOrEmpty(richEditControl1.Text);
-    }    
-
-        
+    }
 
     
 }
