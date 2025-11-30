@@ -70,6 +70,12 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private bool _isDoneTaskButtonEnabled;
     [ObservableProperty]
     private bool _isFavoriteButtonEnabled;
+    [ObservableProperty]
+    private bool _isFastText1Visible;
+    [ObservableProperty]
+    private bool _isFastText2Visible;
+
+
     public TextCategory CurrentTextCategory { get; internal set; }
     #endregion
 
@@ -168,7 +174,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         Saving();
         
         var prevTextRequest = new PrevTextRequest(_textname);
-        var response = prevTextUseCase.GetPrevText(prevTextRequest);
+        var response = prevTextUseCase.GetPrevText(prevTextRequest);       
 
         if (response.PrevTextExists)
         {
@@ -178,18 +184,21 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
             ShowTextName();            
         }
         SetFocusOnMainText?.Invoke();
-    }
+    }    
 
-    public void GotoText(TextEntity selectedText)
+    [RelayCommand]
+    public void FastText1()
     {
-        Saving();
 
-        _fromLoadFile = true;
-        TextContent = selectedText.TextContent;
-        _textname = selectedText.Name;
-        ShowTextName();
-        SetFocusOnMainText?.Invoke();
     }
+
+    [RelayCommand]
+    public void FastText2()
+    {
+
+    }
+
+
     #endregion
 
 
@@ -205,7 +214,6 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     {
 
     }
-
     
 
     private void ExecuteOpenSettings()
@@ -275,23 +283,23 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
             ChangeFilename(response.TextName);
             // todo: много логики, реализовать потом (загрузка хоткеев для быстрого доступа к текстам, в основном для избранных и задач)
-            //LoadPrevTextsHotKeys();
+            LoadPrevTextsHotKeys();
         }        
     }
     
     // Прогрузить кнопки быстрого доступа к текстам
-    /*private void LoadPrevTextsHotKeys()
+    private void LoadPrevTextsHotKeys()
     {
-        var files = GetFiles(_view.SelectedTextGroup);
-        SetVisibleTaskButtons(files);
+        // todo: надо ещё на форму добавить выпадающий список с тремя типами категорий, и тогда вот здесь нужно выбирать из них
+        /*var textList = TextManageService.GetTextEntities(FastTextCategory - это комбо-бокс)        
+        SetVisibleTaskButtons(textList);
         int visibleButtons = GetNumberVisibleTaskButtons();
         _secondFileIndex = _firstFileIndex + visibleButtons;
 
         SetHotkeyTexts(files, _firstFileIndex, _secondFileIndex, visibleButtons);
-        SetButtonsLabels(files);
-    }*/
+        SetButtonsLabels(files);*/
+    }
 
-    
 
     private void ShowTextName()
     {        
@@ -354,5 +362,14 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         //checkButtonTask.Enabled = checkButtonDoneTask.Enabled = checkButtonFavorite.Enabled = !string.IsNullOrEmpty(richEditControl1.Text);
     }
 
-    
+    public void GotoText(TextEntity selectedText)
+    {
+        Saving();
+
+        _fromLoadFile = true;
+        TextContent = selectedText.TextContent;
+        _textname = selectedText.Name;
+        ShowTextName();
+        SetFocusOnMainText?.Invoke();
+    }
 }

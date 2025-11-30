@@ -54,6 +54,16 @@
                     Margin="5"
                     IsChecked="{Binding IsDoneTaskButtonChecked}"
                     IsEnabled="{Binding IsDoneTaskButtonEnabled}"/>
+
+        <Button Classes="outlined" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline, Text=Быстрый текст 1}"
+                Command="{Binding FastText1Command}"
+                Margin="5"
+                IsVisible="{Binding IsFastText1Visible}"/>
+
+        <Button Classes="outlined" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline, Text=Быстрый текст 2}"
+                Command="{Binding FastText2Command}"
+                Margin="5"
+                IsVisible="{Binding IsFastText2Visible}"/>
      
     </StackPanel>
 
