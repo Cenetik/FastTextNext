@@ -15,9 +15,27 @@
        
 
         <!--themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Green" SecondaryColor="Red" /-->
-         <sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True" />    
+         <sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True"  />    
         <StyleInclude Source="avares://FastTextNext/Styles1.axaml"/>
         <materialIcons:MaterialIconStyles />       
     </Application.Styles>
+    <Application.Resources>     
+      <ResourceDictionary>
+        <!--define your geometry here-->
+        <StreamGeometry x:Key="warning_regular">...</StreamGeometry>
+    
+        <!--define diffrent color depending on light or dark mode-->
+        <ResourceDictionary.ThemeDictionaries>           
+            <ResourceDictionary x:Key='Light'>
+              <SolidColorBrush x:Key='MainTextBackground'>#FFFFFF</SolidColorBrush>
+              <SolidColorBrush x:Key='MainTextForeground'>#111111</SolidColorBrush>
+            </ResourceDictionary>
 
+            <ResourceDictionary x:Key='Dark'>
+              <SolidColorBrush x:Key='MainTextBackground'>#111111</SolidColorBrush> 
+              <SolidColorBrush x:Key='MainTextForeground'>#FFFFFF</SolidColorBrush>
+            </ResourceDictionary>
+          </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

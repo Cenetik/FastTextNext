@@ -36,11 +36,26 @@
               <TextBlock Text="My Button"/>
           </StackPanel>
       </Button-->        
-        <materialIcons:MaterialIconText Kind="ABCOff" Text="fFuck"/>
-      <Button  Content="{materialIcons:MaterialIconTextExt Kind=PlusBold, Text=Новый текст}" Command="{Binding SetNewTextCommand}" Margin="5 5 0 0" Foreground="DarkSlateBlue"/>
-      <Button   Content="{materialIcons:MaterialIconTextExt Kind=Trash, Text=Удалить текст}" Margin="5 5 0 0" Command="{Binding RemoveTextCommand}"/>
-      <Button  Content="{materialIcons:MaterialIconTextExt Kind=ReplyOutline, Text=Пред.текст}" Margin="5 5 0 0" Command="{Binding PrevTextCommand}"/>
-      <Button  Content="{materialIcons:MaterialIconTextExt Kind=ShareOutline, Text=След.текст}" Margin="5 5 0 0" Command="{Binding NextTextCommand}"/>
+        <!--materialIcons:MaterialIconText Kind="ABCOff" Text="fFuck"/-->
+      <Button  Content="{materialIcons:MaterialIconTextExt Kind=PlusBold, Text=Новый текст}" Command="{Binding SetNewTextCommand}" Margin="5 5 0 0"/>
+      <Button  Margin="5 5 0 0" Command="{Binding RemoveTextCommand}">
+          <StackPanel Orientation="Horizontal">
+                <materialIcons:MaterialIcon Kind="Trash" Foreground="IndianRed" Margin="0,0,5,0" />
+              <TextBlock Text="Удалить текст"/>
+          </StackPanel>
+      </Button>
+      <Button  Margin="5 5 0 0" Command="{Binding PrevTextCommand}">
+		  <StackPanel Orientation="Horizontal">
+                <materialIcons:MaterialIcon Kind="ReplyOutline" Foreground="DodgerBlue" Margin="0,0,5,0" />
+              <TextBlock Text="Пред.текст"/>
+          </StackPanel>
+      </Button>
+      <Button Margin="5 5 0 0" Command="{Binding NextTextCommand}">
+		  <StackPanel Orientation="Horizontal">
+                <materialIcons:MaterialIcon Kind="ShareOutline" Foreground="DodgerBlue" Margin="0,0,5,0" />
+              <TextBlock Text="След.текст"/>
+          </StackPanel>
+      </Button>
       <Button  Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Список текстов}" Command="{Binding ShowListTextCommand}" Margin="5 5 0 0"/>
       <ToggleButton  Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Поверх всех окон}" Command="{Binding SetTopMost}" Margin="5 5 0 0"/>
       <ToggleButton  Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Disc, Text=Перезапись}" 
