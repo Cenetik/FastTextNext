@@ -263,7 +263,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
             Saving();
         else
             _withoutActivity = true;
-        Debug.WriteLine(DateTime.Now.ToString("HH:mm:ss"));
+        //Debug.WriteLine(DateTime.Now.ToString("HH:mm:ss"));
     }
 
     private void Saving()

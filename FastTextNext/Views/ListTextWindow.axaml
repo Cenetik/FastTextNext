@@ -22,11 +22,11 @@
     </Grid.RowDefinitions>
   
     <StackPanel Grid.Row="0" Orientation="Horizontal">
-      <Button Classes="accent" Content="{materialIcons:MaterialIconTextExt Kind=Forward, Text=Перейти к заметке}" Margin="5" Command="{Binding GotoTextCommand}"/>      
+      <Button Content="{materialIcons:MaterialIconTextExt Kind=Forward, Text=Перейти к заметке}" Margin="5" Command="{Binding GotoTextCommand}"/>      
     </StackPanel>
-    <StackPanel Grid.Row="1" Orientation="Horizontal">      
-      <TextBox TextAlignment="Start" VerticalAlignment="Stretch" Text="{Binding TextToFind}" Watermark="Введите строку для поиска" MinWidth="300"/>
-      <Button Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=FindInPage, Text=Найти}" Command="{Binding FindTextCommand}" Margin="5" />
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5 0 0 0">      
+      <TextBox TextAlignment="Start"  Text="{Binding TextToFind}" Watermark="Введите строку для поиска" MinWidth="300" />
+      <Button Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=FindInPage, Text=Найти}" Command="{Binding FindTextCommand}" Margin="5 0 0 0"  />
     </StackPanel>
     <ListBox Grid.Row="2"
                    ItemsSource="{Binding LoadedTexts}"

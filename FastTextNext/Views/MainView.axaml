@@ -30,34 +30,43 @@
                 <TextBlock Text="My Button"/>
             </StackPanel>
         </Button-->
-      <Button Background="Transparent" Content="{materialIcons:MaterialIconTextExt Kind=PlusBold, Text=Новый текст}" Command="{Binding SetNewTextCommand}" Margin="5"/>
-      <Button Background="Transparent"  Foreground="Red" Content="{materialIcons:MaterialIconTextExt Kind=Remove, Text=Удалить текст}" Margin="5" Command="{Binding RemoveTextCommand}"/>
-      <Button Background="Transparent" Content="{materialIcons:MaterialIconTextExt Kind=PreviousTitle, Text=Пред.текст}" Margin="5" Command="{Binding PrevTextCommand}"/>
-      <Button Background="Transparent" Content="{materialIcons:MaterialIconTextExt Kind=NextTitle, Text=След.текст}" Margin="5" Command="{Binding NextTextCommand}"/>
-      <Button Background="Transparent" Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Список текстов}" Command="{Binding ShowListTextCommand}" Margin="5"/>
-      <ToggleButton Background="Transparent" Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Поверх всех окон}" Command="{Binding SetTopMost}" Margin="5"/>
-      <ToggleButton Background="Transparent" Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Disc, Text=Перезапись}" 
+      <!--Button>
+          <StackPanel Orientation="Horizontal">
+                <materialIcons:MaterialIcon Kind="AddToPhotos" Foreground="" Margin="0,0,5,0" />
+              <TextBlock Text="My Button"/>
+          </StackPanel>
+      </Button-->        
+        <materialIcons:MaterialIconText Kind="ABCOff" Text="fFuck"/>
+      <Button  Content="{materialIcons:MaterialIconTextExt Kind=PlusBold, Text=Новый текст}" Command="{Binding SetNewTextCommand}" Margin="5 5 0 0" Foreground="DarkSlateBlue"/>
+      <Button   Content="{materialIcons:MaterialIconTextExt Kind=Trash, Text=Удалить текст}" Margin="5 5 0 0" Command="{Binding RemoveTextCommand}"/>
+      <Button  Content="{materialIcons:MaterialIconTextExt Kind=ReplyOutline, Text=Пред.текст}" Margin="5 5 0 0" Command="{Binding PrevTextCommand}"/>
+      <Button  Content="{materialIcons:MaterialIconTextExt Kind=ShareOutline, Text=След.текст}" Margin="5 5 0 0" Command="{Binding NextTextCommand}"/>
+      <Button  Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Список текстов}" Command="{Binding ShowListTextCommand}" Margin="5 5 0 0"/>
+      <ToggleButton  Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=ListBox, Text=Поверх всех окон}" Command="{Binding SetTopMost}" Margin="5 5 0 0"/>
+      <ToggleButton  Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Disc, Text=Перезапись}" 
                     ToolTip.Tip="F5, при сохранении будет перезаписана текущая заметка, а не создана новая. Флаг сбросится после сохранения заметки" 
                     Command="{Binding SetResaveModeCommand}"
-                    IsChecked="{Binding IsResaveThisButtonChecked}" Margin="5"/>
+                    IsChecked="{Binding IsResaveThisButtonChecked}" Margin="5 5 0 0"/>
       <!--TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!" Padding="5" Margin="5"/-->          
     </StackPanel>
-    <StackPanel Grid.Row="1" Orientation="Horizontal">
+    <StackPanel Grid.Row="1" Orientation="Horizontal" IsVisible="False">
       <TextBlock Classes="Headline6" Text="{Binding HeaderText}"/>
     </StackPanel>
     <StackPanel Grid.Row="2" Orientation="Horizontal">      
-      <ToggleButton Background="Transparent" Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Star}" ToolTip.Tip="Избранный" 
+      <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=Star}" ToolTip.Tip="Избранный" 
                     Command="{Binding SetFavoriteTextCommand}"
                     IsChecked="{Binding IsFavoriteButtonChecked}"
                     Margin="5"
-                    IsEnabled="{Binding IsFavoriteButtonEnabled}">        
+                    IsEnabled="{Binding IsFavoriteButtonEnabled}">           
       </ToggleButton>
-      <ToggleButton Background="Transparent" Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline}" ToolTip.Tip="Задача" 
+      <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarBlankOutline}" ToolTip.Tip="Задача" 
                     Command="{Binding SetTaskTextCommand}"
                     Margin="5"
                     IsChecked="{Binding IsTaskButtonChecked}"
-                    IsEnabled="{Binding IsTaskButtonEnabled}"/>
-      <ToggleButton Background="Transparent" Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarCheck}" ToolTip.Tip="Задача выполонена" 
+                    IsEnabled="{Binding IsTaskButtonEnabled}">
+          
+      </ToggleButton>
+      <ToggleButton Classes="primary" Content="{materialIcons:MaterialIconTextExt Kind=CalendarCheck}" ToolTip.Tip="Задача выполонена" 
                     Command="{Binding SetDoneTaskTextCommand}"
                     Margin="5"
                     IsChecked="{Binding IsDoneTaskButtonChecked}"
@@ -76,7 +85,30 @@
     </StackPanel>
 
     <!--TextBox Classes="outline" VerticalContentAlignment="Top" VerticalAlignment="Stretch" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" Text="{Binding TextContent}"/-->
-    <TextBox Name="MainText" Classes="filled" VerticalContentAlignment="Bottom" TextAlignment="Start" VerticalAlignment="Stretch" Grid.Row="3" Margin="5 15 5 5" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" Text="{Binding TextContent}"/>
+    <!--TextBox Name="MainText"             
+             VerticalContentAlignment="Top" 
+             TextAlignment="Left" 
+             VerticalAlignment="Stretch" 
+             Grid.Row="3" 
+             Margin="5 15 5 5" 
+             TextWrapping="Wrap" 
+             AcceptsReturn="True" 
+             HorizontalAlignment="Stretch" 
+             Text="{Binding TextContent}"
+             /-->
+
+      <TextBox Name="MainText"
+             Classes="normalStyle"
+             VerticalContentAlignment="Top" 
+             TextAlignment="Left" 
+             VerticalAlignment="Stretch" 
+             Grid.Row="3" 
+             Margin="5 15 5 5" 
+             TextWrapping="Wrap" 
+             AcceptsReturn="True" 
+             HorizontalAlignment="Stretch" 
+             Text="{Binding TextContent}"
+             />
 
     <StackPanel Grid.Row="4" Orientation="Vertical">
       <TextBlock Text="{Binding LogText}"/>
