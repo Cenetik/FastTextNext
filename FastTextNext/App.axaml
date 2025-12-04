@@ -16,7 +16,9 @@
 
         <!--themes:MaterialTheme BaseTheme="Inherit" PrimaryColor="Green" SecondaryColor="Red" /-->
          <sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True"  />    
+        <!--SimpleTheme /--> 
         <StyleInclude Source="avares://FastTextNext/Styles1.axaml"/>
+       
         <materialIcons:MaterialIconStyles />       
     </Application.Styles>
     <Application.Resources>     

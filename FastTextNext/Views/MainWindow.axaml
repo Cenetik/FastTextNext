@@ -23,31 +23,53 @@
      <Style Selector="TextBox.normalStyle">
         <Setter Property="Background" Value="{DynamicResource MainTextBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}"/>
+
         <Style Selector="^:pointerover">
             <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
-
             <Style Selector="^ /template/ Border#PART_BorderElement">
                 <Setter Property="BorderBrush" Value="{DynamicResource MainTextBackground}"/>
                 <Setter Property="Background" Value="{DynamicResource MainTextBackground}" />
             </Style>
-
             <Style Selector="^ /template/ TextBlock#PART_Watermark">
                 <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
             </Style>
         </Style>
+
         <Style Selector="^:focus">
             <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
-
             <Style Selector="^ /template/ TextBlock#PART_Watermark">
                 <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
             </Style>
-
             <Style Selector="^ /template/ Border#PART_BorderElement">
                 <Setter Property="Background" Value="{DynamicResource MainTextBackground}"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource MainTextBackground}"/>
                 <Setter Property="BorderThickness" Value="0" />
             </Style>
         </Style>
+
+         <Style Selector="^:not(:focus)">
+            <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
+            <Style Selector="^ /template/ TextBlock#PART_Watermark">
+                <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
+            </Style>
+            <Style Selector="^ /template/ Border#PART_BorderElement">
+                <Setter Property="Background" Value="{DynamicResource MainTextBackground}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MainTextBackground}"/>
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+        </Style>
+
+         <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource MainTextBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource MainTextBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
+            </Style>
+
+            <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+                <Setter Property="Background" Value="{DynamicResource MainTextBackground}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource MainTextBackground}" />
+                <Setter Property="Foreground" Value="{DynamicResource MainTextForeground}" />
+            </Style>
     </Style>
   </Window.Styles>
   <Window.Resources>
