@@ -48,7 +48,7 @@ public partial class MainView : UserControl
         //if (backgroundBrush != null)
           //  MainText.Background = backgroundBrush;
         //MainText.Background = Brushes.LightGray;
-        Debug.WriteLine("main text PointerEntered");
+       // Debug.WriteLine("main text PointerEntered");
     }
 
     private void MainText_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -56,14 +56,14 @@ public partial class MainView : UserControl
         //MainText.Background = Brushes.LightGray;
         /*if (backgroundBrush != null) 
             MainText.Background = backgroundBrush;*/
-        Debug.WriteLine("main text lost focus");
+        //Debug.WriteLine("main text lost focus");
     }
 
     private void MainText_GotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
     {
        // MainText.Background = Brushes.LightGray;
         //backgroundBrush = MainText.Background;        
-        Debug.WriteLine("main text got focus");
+        //Debug.WriteLine("main text got focus");
     }
 
     private void MainView_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
