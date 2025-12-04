@@ -269,7 +269,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private void Saving()
     {
         var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged, TextContent,_textname,IsResaveThisButtonChecked,
-                                                 IsFavoriteButtonChecked,IsTaskButtonChecked,IsTaskButtonChecked,LogText,_firstFileIndex);
+                                                 IsFavoriteButtonChecked,IsTaskButtonChecked,IsDoneTaskButtonChecked,LogText,_firstFileIndex);
 
         var response = savingLogicUseCase.Save(saveRequest);
 

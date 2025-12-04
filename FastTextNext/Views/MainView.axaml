@@ -85,7 +85,7 @@
       <!--TextBlock Classes="Headline6" Text="Hello world with Material.Avalonia!" Padding="5" Margin="5"/-->          
     </StackPanel>
 
-    <StackPanel Grid.Row="1" Orientation="Horizontal" IsVisible="False">
+    <StackPanel Grid.Row="1" Orientation="Horizontal" IsVisible="True">
       <TextBlock Classes="Headline6" Text="{Binding HeaderText}"/>
     </StackPanel>
 
