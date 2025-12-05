@@ -6,6 +6,8 @@
         xmlns:views="clr-namespace:FastTextNext.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Height="500"
+        Width="800"
         x:Class="FastTextNext.Views.ListTextWindow"
         x:DataType="vm:ListTextModel"
         Title="ListTextWindow">

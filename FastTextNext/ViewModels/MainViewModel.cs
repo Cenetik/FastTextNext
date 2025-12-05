@@ -12,6 +12,7 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Domain.Entities;
+using FastTextNext.Commands;
 using FastTextNext.Services;
 using FastTextNext.Views;
 using Microsoft.Extensions.Configuration;
@@ -89,16 +90,23 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         this.nextTextUseCase = nextTextUseCase;
         this.TextManageService = textManageService;
         this.prevTextUseCase = prevTextUseCase;
-        ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);
+        ShowListTextCommand = new RelayCommand(ExecuteOpenSettings);        
+        //ShowListTextCommand = new ShowListTextRelayCommand(OnOpenSettingsDialog,CanOpenSettingsDialog);
 
         CurrentTextCategory = TextCategory.AllTexts;
 
         InitAndStartTimer();
     }
 
+    private bool CanOpenSettingsDialog(object arg)
+    {
+        return true;
+    }
 
-    #region RelayCommands
+
+    #region RelayCommands    
     public RelayCommand ShowListTextCommand { get; }
+    //public ShowListTextRelayCommand ShowListTextCommand { get; }
     public ITextManageService TextManageService { get; internal set; }
 
     [RelayCommand]
@@ -123,18 +131,35 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     [RelayCommand]
     public void SetFavoriteText()
     {
-
+        _noteModeChanged = true;
+        Saving();
     }
 
     [RelayCommand]
     public void SetTaskText()
     {
+        _noteModeChanged = true;
+        if (IsDoneTaskButtonChecked && IsTaskButtonChecked)
+            IsDoneTaskButtonChecked = false;
+
+        _checkButtonTaskClicked = false;
+        _noteModeChanged = true;
+        if (IsTaskButtonChecked)
+            TextContent += Environment.NewLine + "[" + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + "] - задача создана";
+        Saving();
     }
 
     [RelayCommand]
     public void SetDoneTaskText()
     {
+        _checkButtonDoneTaskClicked = false;
+        _noteModeChanged = true;
 
+        IsTaskButtonChecked = !IsDoneTaskButtonChecked;
+
+        if (IsDoneTaskButtonChecked)
+            TextContent += Environment.NewLine + "[" + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + "] - задача выполнена";
+        Saving();
     }
 
     [RelayCommand]
@@ -164,6 +189,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
             TextContent = response.NextTextContent;
             _textname = response.TextName;
             ShowTextName();
+            ChangeFilename(response.TextName);
         }
         SetFocusOnMainText?.Invoke();
     }
@@ -180,8 +206,9 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         {
             _fromLoadFile = true;
             TextContent = response.PrevTextContent;
-            _textname = response.TextName;
-            ShowTextName();            
+            _textname = response.TextName;            
+            ShowTextName();  
+            ChangeFilename(response.TextName);
         }
         SetFocusOnMainText?.Invoke();
     }    
@@ -311,29 +338,26 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         if (dateTimeOfFile != null)
             textNameForHeader += string.Format(" [{0:dd.MM.yyyy HH:mm:ss.fff}]", dateTimeOfFile.Value);
 
-        var mode = TextManageService.GetTextCategory(_textname);
+        var mode = TextManageService.GetTextCategory(_textname);        
 
-
-        HeaderText = SetHeaderText(textNameForHeader, mode); 
+        HeaderText = GetHeaderText(textNameForHeader, mode); 
+        
     }
 
-    private string SetHeaderText(string filename, TextCategory textCategory)
+    private string GetHeaderText(string filename, TextCategory textCategory)
     {
-        string mode="";
-        switch (textCategory)
-        {
-            case TextCategory.Favoites:
-                mode = "- Избранная";
-                break;
-            case TextCategory.DoneTasks:
-                mode = "- Задача выполнена";
-                break;
-            case TextCategory.Tasks:
-                mode = " - Задача";
-                break;
-        }
+        string suffix = "";
+        if (filename.Contains("_f"))
+            suffix += " Избранная";
+        if (filename.Contains("_t"))
+            suffix += " Задача";
+        if (filename.Contains("_d"))
+            suffix += " Выполненная задача";        
 
-        return string.Format("{0} - {1}{2}", _maintext, filename, mode);
+        if (!string.IsNullOrEmpty(suffix))
+            suffix = " -" + suffix;
+
+        return string.Format("{0} - {1}{2}", _maintext, filename, suffix);
     }
 
     private DateTime? GetDateTimeByTextName(string filename)
@@ -350,13 +374,16 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     {
         TextContentChanged?.Invoke();       
 
-        if (!_fromLoadFile)
+        if (_fromLoadFile)
+        {
+            _fromLoadFile = false;            
+        }
+        else
         {
             _wasChanged = true;
             _withoutActivity = false;
         }
-        else
-            _fromLoadFile = false;
+            
 
         IsDoneTaskButtonEnabled = IsTaskButtonEnabled = IsFavoriteButtonEnabled = !string.IsNullOrEmpty(TextContent);
         //checkButtonTask.Enabled = checkButtonDoneTask.Enabled = checkButtonFavorite.Enabled = !string.IsNullOrEmpty(richEditControl1.Text);
@@ -371,5 +398,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         _textname = selectedText.Name;
         ShowTextName();
         SetFocusOnMainText?.Invoke();
+
+        ChangeFilename(selectedText.Name);
     }
 }
