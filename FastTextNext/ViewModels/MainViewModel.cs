@@ -135,6 +135,11 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
         Saving();
     }
 
+    partial void OnIsFavoriteButtonCheckedChanged(bool value)
+    {
+        // тут нельзя делать логику сейва, т.к. событие вызывается даже когда переходим со старых заметок на новые. И из-за логики происходит пересохранение и зацикливание.
+    }
+
     [RelayCommand]
     public void SetTaskText()
     {
