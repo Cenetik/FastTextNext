@@ -44,7 +44,7 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     private int _secondFileIndex;
     private bool _isTopMost;
     private readonly IBaseTimer timer;
-    private readonly ISavingLogicUseCase savingLogicUseCase;
+    private readonly ISaveTextUseCase saveTextUseCase;
     private readonly INextTextUseCase nextTextUseCase;    
     private readonly IPrevTextUseCase prevTextUseCase;
     private readonly ITextStorageService textStorageService;
@@ -80,13 +80,13 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
     public TextCategory CurrentTextCategory { get; internal set; }
     #endregion
 
-    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISavingLogicUseCase savingLogicUseCase, INextTextUseCase nextTextUseCase,
+    public MainViewModel(ITextStorageService textStorageService, IConfiguration configuration, IBaseTimer timer, ISaveTextUseCase savingLogicUseCase, INextTextUseCase nextTextUseCase,
         ITextManageService textManageService, IPrevTextUseCase prevTextUseCase)
         : base()
     {
         this.textStorageService = textStorageService;
         this.timer = timer;
-        this.savingLogicUseCase = savingLogicUseCase;
+        this.saveTextUseCase = savingLogicUseCase;
         this.nextTextUseCase = nextTextUseCase;
         this.TextManageService = textManageService;
         this.prevTextUseCase = prevTextUseCase;
@@ -300,24 +300,34 @@ public partial class MainViewModel : ObservableObject, IMainViewModel
 
     private void Saving()
     {
-        var saveRequest = new SavingLogicRequest(_changeFontStyle, _noteModeChanged, _wasChanged, TextContent,_textname,IsResaveThisButtonChecked,
-                                                 IsFavoriteButtonChecked,IsTaskButtonChecked,IsDoneTaskButtonChecked,LogText,_firstFileIndex);
+        var args = new SaveTextUseCaseParams(ChangeFontStyle: _changeFontStyle,
+                                         NoteModeChanged: _noteModeChanged,
+                                         WasChanged: _wasChanged,
+                                         TextContent: TextContent,
+                                         Filename: _textname,
+                                         ButtonResaveThisChecked: IsResaveThisButtonChecked,
+                                         CheckButtonFavoriteChecked: IsFavoriteButtonChecked,
+                                         CheckButtonTaskChecked: IsTaskButtonChecked,
+                                         CheckButtonDoneTaskChecked: IsDoneTaskButtonChecked,
+                                         LogText: LogText,
+                                         FirstFileIndex: _firstFileIndex);
 
-        var response = savingLogicUseCase.Save(saveRequest);
+        var result = saveTextUseCase.Execute(args);
 
-        LogText = response.LogText;
-        _firstFileIndex = response.FirstFileIndex;
-        _wasChanged = response.WasChanged;
-        _noteModeChanged = response.NoteModeChanged;        
-        if (response.TextNameChanged)
+        LogText = result.LogText;
+        _firstFileIndex = result.FirstFileIndex;
+        _wasChanged = result.WasChanged;
+        _noteModeChanged = result.NoteModeChanged;        
+        if (result.TextNameChanged)
         {
             IsResaveThisButtonChecked = false;           
 
-            ChangeFilename(response.TextName);
+            ChangeFilename(result.TextName);
             // todo: много логики, реализовать потом (загрузка хоткеев для быстрого доступа к текстам, в основном для избранных и задач)
             LoadPrevTextsHotKeys();
         }        
     }
+    
     
     // Прогрузить кнопки быстрого доступа к текстам
     private void LoadPrevTextsHotKeys()
