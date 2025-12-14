@@ -43,7 +43,7 @@ namespace FastTextNext.Utils
 
             services.AddSingleton<IMainViewModel, MainViewModel>();
             services.AddTransient<MainViewModel>();
-            services.AddTransient<ISavingLogicUseCase, SavingLogicUseCase>();
+            services.AddTransient<ISaveTextUseCase, SaveTextUseCase>();
             services.AddTransient<INextTextUseCase, NextTextUseCase>();
             services.AddTransient<IPrevTextUseCase, PrevTextUseCase>();
             services.AddTransient<ITextManageService, TextsManageService>();
